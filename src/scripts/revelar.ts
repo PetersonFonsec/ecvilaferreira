@@ -53,12 +53,20 @@ export function iniciarRevelar(animar: boolean) {
     return;
   }
 
+  // A máscara fechada (clip-path) deixa o elemento sem área visível, e o IntersectionObserver
+  // nunca o vê entrar na tela. Por isso ela é observada pelo elemento pai.
+  const porObservado = new Map<Element, HTMLElement[]>();
+  alvos.forEach((el) => {
+    const observado = (el.dataset.revelar === 'mascara' && el.parentElement) || el;
+    porObservado.set(observado, [...(porObservado.get(observado) ?? []), el]);
+  });
+
   const observador = quandoVisivel(
-    alvos,
-    (el, visivel) => {
+    porObservado.keys(),
+    (observado, visivel) => {
       if (!visivel) return;
-      el.classList.add('revelado');
-      observador.unobserve(el);
+      porObservado.get(observado)?.forEach((el) => el.classList.add('revelado'));
+      observador.unobserve(observado);
     },
     { rootMargin: '0px 0px -12% 0px', threshold: 0.01 },
   );

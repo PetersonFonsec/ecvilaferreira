@@ -13,7 +13,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
-    "prismic:modelos": "node scripts/enviar-modelos.mjs"
+    "prismic:modelos": "node scripts/enviar-modelos.mjs",
+    "prismic:conteudo": "node scripts/enviar-conteudo.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
