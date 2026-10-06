@@ -1,14 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
-import Section from '@/components/ui/Section.astro';
 import Botao from '@/components/ui/Botao.astro';
 import Ilustracao from '@/components/ui/Ilustracao.astro';
 import Letreiro from '@/components/ui/Letreiro.astro';
-import CampaignCard from '@/components/cards/CampaignCard.astro';
-import ProjectCard from '@/components/cards/ProjectCard.astro';
-import NewsCard from '@/components/cards/NewsCard.astro';
-import SponsorCard from '@/components/cards/SponsorCard.astro';
+import CampanhasInicio from '@/components/inicio/CampanhasInicio.astro';
+import ProjetosInicio from '@/components/inicio/ProjetosInicio.astro';
+import NoticiasInicio from '@/components/inicio/NoticiasInicio.astro';
+import PatrocinadoresInicio from '@/components/inicio/PatrocinadoresInicio.astro';
 import type { NomeIlustracao } from '@/data/ilustracoes';
 import {
   getCampanhas,
@@ -149,67 +148,21 @@ const jsonLd = {
 
   {
     campanhasAtivas.length > 0 && (
-      <Section tom="claro" chapeu="Apoie" titulo="Campanhas em andamento" id="campanhas">
-        <ul class="grade" role="list" data-revelar="grupo">
-          {campanhasAtivas.map((campanha) => (
-            <li>
-              <CampaignCard campanha={campanha} />
-            </li>
-          ))}
-        </ul>
-        <p class="ver-mais" data-revelar>
-          <a href="/campanhas">Ver todas as campanhas</a>
-        </p>
-      </Section>
+      <>
+        <Letreiro
+          itens={['Apoie o clube', 'Cada real conta', 'Tudo na transparência', 'Doe via PIX']}
+          velocidade={-1}
+        />
+        <CampanhasInicio campanhas={campanhasAtivas} />
+      </>
     )
   }
 
-  <Section chapeu="Comunidade" titulo="Projetos sociais" subtitulo="O Vila Ferreira joga dentro e fora de campo." id="projetos">
-    <ul class="grade" role="list" data-revelar="grupo">
-      {
-        projetos.slice(0, 3).map((projeto) => (
-          <li>
-            <ProjectCard projeto={projeto} />
-          </li>
-        ))
-      }
-    </ul>
-    <p class="ver-mais" data-revelar><a href="/projetos">Conheça todos os projetos</a></p>
-  </Section>
+  {projetos.length > 0 && <ProjetosInicio projetos={projetos.slice(0, 4)} />}
 
-  {
-    noticias.length > 0 && (
-      <Section tom="claro" chapeu="Clube" titulo="Últimas notícias" id="noticias">
-        <ul class="grade" role="list" data-revelar="grupo">
-          {noticias.slice(0, 3).map((noticia) => (
-            <li>
-              <NewsCard noticia={noticia} />
-            </li>
-          ))}
-        </ul>
-        <p class="ver-mais" data-revelar>
-          <a href="/noticias">Todas as notícias</a>
-        </p>
-      </Section>
-    )
-  }
+  {noticias.length > 0 && <NoticiasInicio noticias={noticias} instagram={config.instagram} />}
 
-  {
-    patrocinadores.length > 0 && (
-      <Section chapeu="Quem caminha com a gente" titulo="Patrocinadores" id="patrocinadores">
-        <ul class="grade grade--estreita" role="list" data-revelar="grupo">
-          {patrocinadores.map((patrocinador) => (
-            <li>
-              <SponsorCard patrocinador={patrocinador} />
-            </li>
-          ))}
-        </ul>
-        <p class="ver-mais" data-revelar>
-          <a href="/patrocinadores">Seja um patrocinador</a>
-        </p>
-      </Section>
-    )
-  }
+  {patrocinadores.length > 0 && <PatrocinadoresInicio patrocinadores={patrocinadores} />}
 
   <section class="loja-chamada" aria-labelledby="loja-titulo">
     <div class="container loja-chamada__grade">
@@ -484,31 +437,6 @@ const jsonLd = {
     background: var(--ouro-500);
     transform: scaleX(var(--progresso, 0));
     transform-origin: 0 50%;
-  }
-
-  /* ---------- Listas ---------- */
-  .ver-mais {
-    margin-top: var(--espaco-6);
-    font-family: var(--fonte-titulo);
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .ver-mais a {
-    text-decoration: none;
-    background: linear-gradient(var(--ouro-500), var(--ouro-500)) 0 100% / 100% 2px no-repeat;
-    transition: background-size 500ms var(--curva-saida);
-  }
-
-  .ver-mais a::after {
-    content: ' →';
-  }
-
-  .ver-mais a:hover {
-    background-size: 0% 2px;
-    background-position: 100% 100%;
   }
 
   /* ---------- Chamada da loja ---------- */

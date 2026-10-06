@@ -215,3 +215,39 @@ export function iniciarSeguirCursor() {
     }
   });
 }
+
+/** [data-previa]: ao passar o mouse, a foto ([data-previa-foto]) aparece e segue o cursor, inclinando com o movimento. */
+export function iniciarPrevia() {
+  document.querySelectorAll<HTMLElement>('[data-previa]').forEach((linha) => {
+    const foto = linha.querySelector<HTMLElement>('[data-previa-foto]');
+    if (!foto) return;
+    linha.classList.add('previa--js');
+    const alvo = { x: 0, y: 0 };
+    const atual = { x: 0, y: 0 };
+    let cancelar: (() => void) | null = null;
+
+    linha.addEventListener('pointerenter', (e) => {
+      const caixa = linha.getBoundingClientRect();
+      alvo.x = atual.x = e.clientX - caixa.left;
+      alvo.y = atual.y = e.clientY - caixa.top;
+      cancelar ??= aCadaQuadro((_, delta) => {
+        const antes = atual.x;
+        atual.x = suavizar(atual.x, alvo.x, 0.14, delta);
+        atual.y = suavizar(atual.y, alvo.y, 0.14, delta);
+        foto.style.setProperty('--px', `${atual.x.toFixed(1)}px`);
+        foto.style.setProperty('--py', `${atual.y.toFixed(1)}px`);
+        foto.style.setProperty('--giro', `${limitar((atual.x - antes) * 0.6, -12, 12).toFixed(2)}deg`);
+      });
+    });
+    linha.addEventListener('pointermove', (e) => {
+      const caixa = linha.getBoundingClientRect();
+      alvo.x = e.clientX - caixa.left;
+      alvo.y = e.clientY - caixa.top;
+    });
+    linha.addEventListener('pointerleave', () => {
+      cancelar?.();
+      cancelar = null;
+      foto.style.removeProperty('--giro');
+    });
+  });
+}

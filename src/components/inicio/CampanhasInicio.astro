@@ -1,0 +1,525 @@
+---
+import Botao from '@/components/ui/Botao.astro';
+import Escudo from '@/components/ui/Escudo.astro';
+import Ilustracao from '@/components/ui/Ilustracao.astro';
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import { formatarMoeda, percentual } from '@/lib/format';
+import type { Campanha } from '@/lib/types';
+
+/**
+ * Campanhas da página inicial: a primeira ganha um painel grande, com a meta em destaque;
+ * as demais (se houver) viram linhas compactas logo abaixo.
+ */
+interface Props {
+  campanhas: Campanha[];
+}
+const { campanhas } = Astro.props;
+const [destaque, ...outras] = campanhas;
+const pct = percentual(destaque.arrecadado, destaque.meta);
+const falta = Math.max(0, destaque.meta - destaque.arrecadado);
+const fim = destaque.dataFim ? new Date(`${destaque.dataFim.slice(0, 10)}T00:00:00Z`) : undefined;
+const prazo = fim && {
+  dia: fim.getUTCDate(),
+  mes: new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(fim).replace('.', ''),
+  completo: new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(fim),
+};
+---
+
+<section class="campanhas" id="campanhas" aria-labelledby="campanhas-titulo">
+  <div class="campanhas__marca" aria-hidden="true" data-parallax="-0.12">
+    <Escudo tamanho={520} simples estrelas={false} />
+  </div>
+
+  <div class="container">
+    <header class="campanhas__cabecalho">
+      <p class="campanhas__chapeu" data-revelar>Apoie</p>
+      <h2 id="campanhas-titulo" data-dividir>Campanhas em andamento</h2>
+      <p class="campanhas__intro" data-revelar style="--atraso: 200ms">
+        Cada doação vai direto para a campanha e fica registrada na transparência do clube. Doe pelo PIX em poucos
+        segundos.
+      </p>
+    </header>
+
+    <article class="destaque">
+      <div class="destaque__arte" data-revelar="mascara">
+        {
+          destaque.imagem ? (
+            <ResponsiveImage imagem={destaque.imagem} proporcao={4 / 5} sizes="(min-width: 64rem) 34rem, 100vw" class="destaque__foto" />
+          ) : (
+            <div class="destaque__desenho" data-seguir="24">
+              <Ilustracao nome="cofrinho" espessura={2.4} />
+            </div>
+          )
+        }
+        {prazo && (
+          <p class="destaque__selo" aria-label={`Até ${prazo.completo}`}>
+            <span aria-hidden="true">Até</span>
+            <strong aria-hidden="true">{prazo.dia}</strong>
+            <span aria-hidden="true">{prazo.mes}</span>
+          </p>
+        )}
+      </div>
+
+      <div class="destaque__texto">
+        <p class="destaque__status" data-revelar>
+          <span class="destaque__pulso" aria-hidden="true"></span>
+          Arrecadando agora
+        </p>
+        <h3 class="destaque__titulo" data-dividir>{destaque.titulo}</h3>
+        <p class="destaque__resumo" data-revelar style="--atraso: 150ms">{destaque.resumo}</p>
+
+        <div class="meta" data-revelar style="--atraso: 250ms">
+          <p class="meta__pct">
+            <span data-contar={pct}>{pct}</span><span class="meta__simbolo">%</span>
+            <span class="meta__rotulo">da meta</span>
+          </p>
+          <div class="meta__barra" style={`--pct: ${pct / 100}`} aria-hidden="true">
+            <span class="meta__preenchido"></span>
+            <span class="meta__bola"></span>
+          </div>
+          <dl class="meta__valores">
+            <div>
+              <dt>Arrecadado</dt>
+              <dd>{formatarMoeda(destaque.arrecadado)}</dd>
+            </div>
+            <div>
+              <dt>Meta</dt>
+              <dd>{formatarMoeda(destaque.meta)}</dd>
+            </div>
+            <div>
+              <dt>Falta</dt>
+              <dd>{formatarMoeda(falta)}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="destaque__acoes" data-revelar style="--atraso: 350ms">
+          <Botao href={`/campanhas/${destaque.slug}`} variante="ouro">Quero ajudar</Botao>
+          <Botao href="/campanhas" variante="contorno">Todas as campanhas</Botao>
+        </div>
+      </div>
+    </article>
+
+    {
+      outras.length > 0 && (
+        <ul class="outras" role="list" data-revelar="grupo">
+          {outras.map((campanha) => {
+            const p = percentual(campanha.arrecadado, campanha.meta);
+            return (
+              <li class="outra">
+                <a class="outra__link" href={`/campanhas/${campanha.slug}`} data-cursor="Ver">
+                  {campanha.titulo}
+                </a>
+                <span class="outra__barra" style={`--pct: ${p / 100}`} aria-hidden="true" />
+                <span class="outra__pct">{p}% da meta</span>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .campanhas {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--espaco-secao);
+    background:
+      radial-gradient(ellipse 55% 60% at 15% 30%, rgb(17 128 51 / 0.45), transparent 70%),
+      var(--verde-950);
+    color: var(--verde-100);
+  }
+
+  /* Brasão gigante em marca d'água */
+  .campanhas__marca {
+    position: absolute;
+    top: 8%;
+    right: -8rem;
+    width: clamp(18rem, 40vw, 34rem);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .campanhas__marca :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  .campanhas__cabecalho {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-2);
+    margin-bottom: var(--espaco-7);
+  }
+
+  @media (min-width: 56rem) {
+    .campanhas__cabecalho {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+      align-items: end;
+      column-gap: var(--espaco-7);
+    }
+
+    .campanhas__chapeu {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .campanhas__intro {
+    max-width: 36ch;
+    font-size: var(--texto-lg);
+    color: var(--verde-200);
+  }
+
+  .campanhas__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
+  }
+
+  .campanhas h2 {
+    max-width: 16ch;
+    font-size: var(--titulo-xl);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--branco);
+  }
+
+  /* ---------- Campanha em destaque ---------- */
+  .destaque {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-6);
+    align-items: center;
+  }
+
+  @media (min-width: 56rem) {
+    .destaque {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+  }
+
+  .destaque__arte {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-height: 36rem;
+    border-radius: var(--raio-lg);
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 55%, rgb(242 203 44 / 0.2), transparent 60%),
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.04) 0 2.5rem, transparent 2.5rem 5rem),
+      var(--verde-800);
+  }
+
+  @media (max-width: 55.9375rem) {
+    .destaque__arte {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  .destaque__arte :global(.destaque__foto) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .destaque__desenho {
+    position: absolute;
+    inset: 12%;
+    display: grid;
+    place-items: center;
+    color: var(--branco);
+  }
+
+  .destaque__desenho :global(.ilustracao) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Selo redondo do prazo, girando devagar */
+  .destaque__selo {
+    position: absolute;
+    right: var(--espaco-4);
+    bottom: var(--espaco-4);
+    display: grid;
+    place-content: center;
+    width: clamp(6rem, 5rem + 2vw, 7.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ouro-500);
+    color: var(--verde-950);
+    font-family: var(--fonte-titulo);
+    font-size: 1.125rem;
+    font-weight: 800;
+    line-height: 0.9;
+    text-align: center;
+    text-transform: uppercase;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  }
+
+  .destaque__selo strong {
+    font-size: clamp(2.25rem, 2rem + 1vw, 3rem);
+  }
+
+  .destaque__selo span:first-child {
+    font-size: 0.8125rem;
+    letter-spacing: 0.2em;
+  }
+
+  .destaque__texto {
+    display: grid;
+    gap: var(--espaco-4);
+    justify-items: start;
+  }
+
+  .destaque__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    padding: var(--espaco-1) var(--espaco-3);
+    border: 1px solid rgb(242 203 44 / 0.4);
+    border-radius: 999px;
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
+  }
+
+  .destaque__pulso {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--ouro-500);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .destaque__pulso::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--ouro-500);
+      animation: pulso 1.8s ease-out infinite;
+    }
+
+    .destaque__selo {
+      animation: balanco 6s ease-in-out infinite;
+    }
+  }
+
+  @keyframes pulso {
+    to {
+      scale: 3;
+      opacity: 0;
+    }
+  }
+
+  @keyframes balanco {
+    50% {
+      rotate: -8deg;
+    }
+  }
+
+  .destaque__titulo {
+    font-size: var(--titulo-lg);
+    font-weight: 800;
+    line-height: 0.95;
+    color: var(--branco);
+  }
+
+  .destaque__resumo {
+    max-width: 40ch;
+    font-size: var(--texto-lg);
+    color: var(--verde-200);
+  }
+
+  /* ---------- Meta ---------- */
+  .meta {
+    display: grid;
+    gap: var(--espaco-4);
+    width: 100%;
+    margin-block: var(--espaco-3);
+  }
+
+  .meta__pct {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 var(--espaco-3);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+    font-weight: 800;
+    line-height: 0.85;
+    color: var(--ouro-500);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta__simbolo {
+    margin-left: -0.15em;
+    font-size: 0.55em;
+  }
+
+  .meta__rotulo {
+    font-size: 1.25rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--verde-200);
+  }
+
+  .meta__barra {
+    position: relative;
+    height: 0.75rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .meta__preenchido {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--ouro-600), var(--ouro-400));
+    transform: scaleX(var(--pct));
+    transform-origin: 0 50%;
+  }
+
+  /* A bola marca até onde a arrecadação chegou */
+  .meta__bola {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--pct) * 100%);
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: -0.875rem 0 0 -0.875rem;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, var(--verde-950) 0 22%, transparent 23%),
+      var(--branco);
+    box-shadow: 0 0 0 4px rgb(242 203 44 / 0.35);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .meta__preenchido,
+    .meta__bola {
+      transition:
+        transform 1800ms var(--curva-entra-sai) 300ms,
+        left 1800ms var(--curva-entra-sai) 300ms,
+        rotate 1800ms var(--curva-entra-sai) 300ms;
+    }
+
+    :global(.js:not(.revelar-tudo)) .meta:not(:global(.revelado)) .meta__preenchido {
+      transform: scaleX(0);
+    }
+
+    :global(.js:not(.revelar-tudo)) .meta:not(:global(.revelado)) .meta__bola {
+      left: 0;
+      rotate: -360deg;
+    }
+  }
+
+  .meta__valores {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: var(--espaco-5);
+  }
+
+  .meta__valores div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .meta__valores dt {
+    font-size: var(--texto-sm);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verde-300);
+  }
+
+  .meta__valores dd {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-weight: 700;
+    color: var(--branco);
+  }
+
+  .destaque__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-3);
+  }
+
+  /* ---------- Outras campanhas ativas ---------- */
+  .outras {
+    margin-top: var(--espaco-8);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid rgb(255 255 255 / 0.15);
+  }
+
+  .outra {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--espaco-2);
+    padding-block: var(--espaco-5);
+    border-bottom: 1px solid rgb(255 255 255 / 0.15);
+  }
+
+  @media (min-width: 48rem) {
+    .outra {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr) 8rem;
+      align-items: center;
+      gap: var(--espaco-6);
+    }
+  }
+
+  .outra__link {
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-sm);
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--branco);
+    text-decoration: none;
+    transition: color 300ms ease;
+  }
+
+  .outra__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .outra:hover .outra__link {
+    color: var(--ouro-400);
+  }
+
+  .outra__barra {
+    position: relative;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    overflow: hidden;
+  }
+
+  .outra__barra::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ouro-500);
+    transform: scaleX(var(--pct));
+    transform-origin: 0 50%;
+  }
+
+  .outra__pct {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    color: var(--ouro-400);
+    text-align: right;
+  }
+</style>
