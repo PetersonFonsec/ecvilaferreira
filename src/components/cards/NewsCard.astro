@@ -1,0 +1,25 @@
+---
+import Midia from '@/components/ui/Midia.astro';
+import { formatarData } from '@/lib/format';
+import type { Noticia } from '@/lib/types';
+
+interface Props {
+  noticia: Noticia;
+  nivelTitulo?: 'h2' | 'h3';
+}
+const { noticia, nivelTitulo: Titulo = 'h3' } = Astro.props;
+---
+
+<article class="card">
+  <Midia imagem={noticia.imagem} />
+  <div class="card__corpo">
+    <p class="card__meta">
+      <span class="etiqueta">{noticia.categoria}</span>
+      <time datetime={noticia.data}>{formatarData(noticia.data)}</time>
+    </p>
+    <Titulo class="card__titulo">
+      <a class="card__link" href={`/noticias/${noticia.slug}`}>{noticia.titulo}</a>
+    </Titulo>
+    <p>{noticia.resumo}</p>
+  </div>
+</article>

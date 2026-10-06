@@ -1,0 +1,139 @@
+---
+import Escudo from '@/components/ui/Escudo.astro';
+import { menuRodape } from '@/data/navegacao';
+import { linkWhatsApp } from '@/lib/whatsapp';
+import type { Configuracoes } from '@/lib/types';
+
+interface Props {
+  config: Configuracoes;
+}
+const { config } = Astro.props;
+
+const redes = [
+  { rotulo: 'Instagram', href: config.instagram },
+  { rotulo: 'Facebook', href: config.facebook },
+  { rotulo: 'YouTube', href: config.youtube },
+].filter((rede) => rede.href);
+---
+
+<footer class="rodape">
+  <div class="container rodape__grade">
+    <div class="rodape__clube pilha">
+      <p class="rodape__marca">
+        <Escudo tamanho={48} />
+        <span>{config.nome}</span>
+      </p>
+      <p class="rodape__slogan">{config.slogan}</p>
+      <p>
+        Fundado em {config.fundacao} · {config.cidade}
+        {config.endereco && <><br />{config.endereco}</>}
+      </p>
+    </div>
+
+    {
+      menuRodape.map((grupo) => (
+        <nav class="rodape__grupo" aria-label={grupo.titulo}>
+          <h2 class="rodape__titulo">{grupo.titulo}</h2>
+          <ul role="list">
+            {grupo.itens.map((item) => (
+              <li>
+                <a href={item.href}>{item.rotulo}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+
+    <div class="rodape__grupo">
+      <h2 class="rodape__titulo">Fale com a gente</h2>
+      <ul role="list">
+        <li><a href={linkWhatsApp(config.whatsapp)} rel="noopener">WhatsApp</a></li>
+        {config.email && <li><a href={`mailto:${config.email}`}>{config.email}</a></li>}
+        {redes.map((rede) => <li><a href={rede.href} rel="noopener">{rede.rotulo}</a></li>)}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container rodape__base">
+    <p>© {new Date().getFullYear()} {config.nome}. Feito no bairro, com o bairro.</p>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    margin-top: var(--espaco-secao);
+    background: var(--cor-marca-forte);
+    color: var(--verde-100);
+    border-top: 6px solid var(--branco);
+    font-size: var(--texto-sm);
+  }
+
+  .rodape__grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+    gap: var(--espaco-6);
+    padding-block: var(--espaco-7);
+  }
+
+  .rodape__clube {
+    grid-column: 1 / -1;
+    max-width: 28rem;
+  }
+
+  @media (min-width: 64rem) {
+    .rodape__grade {
+      grid-template-columns: 1.6fr repeat(5, 1fr);
+    }
+
+    .rodape__clube {
+      grid-column: auto;
+    }
+  }
+
+  .rodape__marca {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    font-family: var(--fonte-titulo);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--branco);
+  }
+
+  .rodape__slogan {
+    font-family: var(--fonte-titulo);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--branco);
+  }
+
+  .rodape__titulo {
+    margin-bottom: var(--espaco-3);
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: var(--branco);
+  }
+
+  .rodape ul {
+    display: grid;
+    gap: var(--espaco-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .rodape a {
+    color: var(--verde-100);
+  }
+
+  .rodape a:hover {
+    color: var(--branco);
+  }
+
+  .rodape__base {
+    padding-block: var(--espaco-4);
+    border-top: 1px solid rgb(255 255 255 / 0.15);
+  }
+</style>

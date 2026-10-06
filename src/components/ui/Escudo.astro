@@ -1,0 +1,21 @@
+---
+/** Escudo provisório. Substitua pelo SVG oficial do clube quando estiver disponível. */
+interface Props {
+  tamanho?: number;
+  class?: string;
+}
+const { tamanho = 40, class: classe } = Astro.props;
+---
+
+<svg
+  class={classe}
+  width={tamanho}
+  height={tamanho * 1.15}
+  viewBox="0 0 40 46"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d="M20 1 38 7v15c0 11-7.6 19.6-18 23C9.6 41.6 2 33 2 22V7Z" fill="#0f5c32" stroke="#fff" stroke-width="2" />
+  <path d="M2 18h36v8H2z" fill="#fff" />
+  <text x="20" y="25" text-anchor="middle" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="9" fill="#0f5c32">VF</text>
+</svg>

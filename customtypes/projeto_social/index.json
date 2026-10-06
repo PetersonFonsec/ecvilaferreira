@@ -1,0 +1,85 @@
+{
+  "id": "projeto_social",
+  "label": "Projeto Social",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "Slug (URL)"
+        }
+      },
+      "titulo": {
+        "type": "Text",
+        "config": {
+          "label": "Título"
+        }
+      },
+      "resumo": {
+        "type": "Text",
+        "config": {
+          "label": "Resumo"
+        }
+      },
+      "imagem": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem de capa",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "status": {
+        "type": "Select",
+        "config": {
+          "label": "Status",
+          "options": [
+            "Em andamento",
+            "Recorrente",
+            "Concluído"
+          ],
+          "default_value": "Em andamento"
+        }
+      },
+      "data": {
+        "type": "Date",
+        "config": {
+          "label": "Data"
+        }
+      },
+      "conteudo": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Conteúdo",
+          "multi": "paragraph,strong,em,hyperlink,heading2,heading3,list-item,o-list-item,image,embed",
+          "allowTargetBlank": true
+        }
+      },
+      "galeria": {
+        "type": "Group",
+        "config": {
+          "label": "Galeria",
+          "fields": {
+            "imagem": {
+              "type": "Image",
+              "config": {
+                "label": "Imagem",
+                "constraint": {},
+                "thumbnails": []
+              }
+            },
+            "legenda": {
+              "type": "Text",
+              "config": {
+                "label": "Legenda"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

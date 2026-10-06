@@ -1,0 +1,50 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import { getConfiguracoes, getNoticias } from '@/lib/content';
+import { formatarData } from '@/lib/format';
+import { imagemCompartilhamento } from '@/lib/imagem';
+import type { Noticia } from '@/lib/types';
+
+export const getStaticPaths = (async () => {
+  const noticias = await getNoticias();
+  return noticias.map((noticia) => ({ params: { slug: noticia.slug }, props: { noticia } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  noticia: Noticia;
+}
+const { noticia } = Astro.props;
+const config = await getConfiguracoes();
+const imagem = noticia.imagem && imagemCompartilhamento(noticia.imagem);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: noticia.titulo,
+  description: noticia.resumo,
+  datePublished: noticia.data,
+  image: imagem ? [imagem] : undefined,
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).toString(),
+  publisher: { '@type': 'SportsTeam', name: config.nome },
+};
+---
+
+<BaseLayout titulo={noticia.titulo} descricao={noticia.resumo} imagem={imagem} imagemAlt={noticia.imagem?.alt} tipo="article" publicadoEm={noticia.data} jsonLd={jsonLd}>
+  <Hero chapeu={noticia.categoria} titulo={noticia.titulo} texto={noticia.resumo} imagem={noticia.imagem} />
+
+  <article class="container noticia">
+    <p class="texto-suave">Publicado em <time datetime={noticia.data}>{formatarData(noticia.data)}</time></p>
+    <div class="prosa" set:html={noticia.conteudo} />
+    <p><a href="/noticias">← Todas as notícias</a></p>
+  </article>
+</BaseLayout>
+
+<style>
+  .noticia {
+    display: grid;
+    gap: var(--espaco-5);
+    padding-top: var(--espaco-secao);
+  }
+</style>

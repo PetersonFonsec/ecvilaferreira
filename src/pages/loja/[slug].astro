@@ -1,0 +1,127 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Botao from '@/components/ui/Botao.astro';
+import Midia from '@/components/ui/Midia.astro';
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import { getConfiguracoes, getProdutos } from '@/lib/content';
+import { formatarMoeda } from '@/lib/format';
+import { imagemCompartilhamento } from '@/lib/imagem';
+import { linkWhatsApp, mensagemProduto } from '@/lib/whatsapp';
+import type { Produto } from '@/lib/types';
+
+export const getStaticPaths = (async () => {
+  const produtos = await getProdutos();
+  return produtos.map((produto) => ({ params: { slug: produto.slug }, props: { produto } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  produto: Produto;
+}
+const { produto } = Astro.props;
+const config = await getConfiguracoes();
+const url = new URL(Astro.url.pathname, Astro.site).toString();
+const [principal, ...extras] = produto.imagens;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: produto.nome,
+  description: produto.resumo,
+  image: produto.imagens.map((img) => img.url),
+  brand: { '@type': 'Brand', name: config.nome },
+  offers:
+    produto.preco !== undefined
+      ? {
+          '@type': 'Offer',
+          price: produto.preco.toFixed(2),
+          priceCurrency: 'BRL',
+          availability: produto.disponivel ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          url,
+        }
+      : undefined,
+};
+---
+
+<BaseLayout
+  titulo={produto.nome}
+  descricao={produto.resumo}
+  imagem={principal && imagemCompartilhamento(principal)}
+  imagemAlt={principal?.alt}
+  jsonLd={jsonLd}
+>
+  <div class="container produto">
+    <div class="produto__imagens">
+      {principal ? <ResponsiveImage imagem={principal} proporcao={1} sizes="(min-width: 56rem) 50vw, 100vw" prioridade /> : <Midia proporcao={1} />}
+      {
+        extras.length > 0 && (
+          <ul class="produto__extras" role="list">
+            {extras.map((img) => (
+              <li>
+                <ResponsiveImage imagem={img} proporcao={1} sizes="8rem" />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    <div class="produto__info pilha">
+      <p><a href="/loja">← Loja</a> · {produto.categoria}</p>
+      <h1>{produto.nome}</h1>
+      {produto.preco !== undefined && <p class="produto__preco">{formatarMoeda(produto.preco)}</p>}
+      {produto.tamanhos.length > 0 && <p>Tamanhos: {produto.tamanhos.join(', ')}</p>}
+      <div class="prosa" set:html={produto.descricao} />
+      {
+        produto.disponivel ? (
+          <Botao href={linkWhatsApp(config.whatsapp, mensagemProduto(produto, url))} variante="whatsapp" externo>
+            Comprar pelo WhatsApp
+          </Botao>
+        ) : (
+          <p class="etiqueta etiqueta--neutra">Esgotado</p>
+        )
+      }
+      <p class="texto-suave">O pedido, o pagamento e a entrega são combinados diretamente com o clube.</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .produto {
+    display: grid;
+    gap: var(--espaco-7);
+    padding-top: var(--espaco-secao);
+  }
+
+  @media (min-width: 56rem) {
+    .produto {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .produto__imagens {
+    display: grid;
+    gap: var(--espaco-3);
+  }
+
+  .produto__imagens :global(img),
+  .produto__imagens :global(.card__midia) {
+    border-radius: var(--raio);
+  }
+
+  .produto__extras {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+    gap: var(--espaco-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .produto__preco {
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-md);
+    font-weight: 700;
+    color: var(--cor-marca);
+  }
+</style>

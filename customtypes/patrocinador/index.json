@@ -1,0 +1,59 @@
+{
+  "id": "patrocinador",
+  "label": "Patrocinador",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "nome": {
+        "type": "Text",
+        "config": {
+          "label": "Nome"
+        }
+      },
+      "logo": {
+        "type": "Image",
+        "config": {
+          "label": "Logo",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "site": {
+        "type": "Link",
+        "config": {
+          "label": "Site",
+          "select": null,
+          "allowTargetBlank": true
+        }
+      },
+      "nivel": {
+        "type": "Select",
+        "config": {
+          "label": "Nível",
+          "options": [
+            "Apoiador",
+            "Prata",
+            "Ouro",
+            "Master"
+          ],
+          "default_value": "Apoiador"
+        }
+      },
+      "descricao": {
+        "type": "Text",
+        "config": {
+          "label": "Descrição"
+        }
+      },
+      "ativo": {
+        "type": "Boolean",
+        "config": {
+          "label": "Ativo",
+          "default_value": true
+        }
+      }
+    }
+  }
+}

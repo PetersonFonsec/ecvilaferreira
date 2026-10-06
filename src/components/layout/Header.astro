@@ -1,0 +1,162 @@
+---
+import Navigation from '@/components/layout/Navigation.astro';
+import Escudo from '@/components/ui/Escudo.astro';
+import { menuDestaque, menuPrincipal } from '@/data/navegacao';
+
+interface Props {
+  nome: string;
+}
+const { nome } = Astro.props;
+---
+
+<header class="cabecalho">
+  <div class="container cabecalho__interno">
+    <a class="marca" href="/" aria-label={`${nome}, página inicial`}>
+      <Escudo tamanho={40} />
+      <span class="marca__texto">
+        <span class="marca__nome">Vila Ferreira</span>
+        <span class="marca__desde">Desde 1984</span>
+      </span>
+    </a>
+
+    <!-- Sem JavaScript o menu fica sempre visível. Com JS, vira um menu recolhível no celular. -->
+    <button class="cabecalho__alternar" type="button" aria-expanded="false" aria-controls="menu-principal" hidden>
+      <span class="cabecalho__icone" aria-hidden="true"></span>
+      Menu
+    </button>
+
+    <Navigation id="menu-principal" itens={menuPrincipal} destaque={menuDestaque} />
+  </div>
+</header>
+
+<script>
+  const botao = document.querySelector<HTMLButtonElement>('.cabecalho__alternar');
+  const menu = document.getElementById('menu-principal');
+  if (botao && menu) {
+    botao.hidden = false;
+    document.documentElement.classList.add('menu-recolhivel');
+    botao.addEventListener('click', () => {
+      const aberto = botao.getAttribute('aria-expanded') === 'true';
+      botao.setAttribute('aria-expanded', String(!aberto));
+    });
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && botao.getAttribute('aria-expanded') === 'true') {
+        botao.setAttribute('aria-expanded', 'false');
+        botao.focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--cor-marca-forte);
+    color: var(--cor-sobre-marca);
+    border-bottom: 4px solid var(--branco);
+    box-shadow: 0 1px 0 var(--verde-700);
+  }
+
+  .cabecalho__interno {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-2) var(--espaco-5);
+    padding-block: var(--espaco-3);
+  }
+
+  .marca {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .marca__texto {
+    display: grid;
+    line-height: 1;
+  }
+
+  .marca__nome {
+    font-family: var(--fonte-titulo);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .marca__desde {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .cabecalho__alternar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    padding: var(--espaco-2) var(--espaco-3);
+    background: transparent;
+    border: 2px solid currentColor;
+    border-radius: var(--raio-sm);
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .cabecalho__alternar[hidden] {
+    display: none;
+  }
+
+  .cabecalho__icone,
+  .cabecalho__icone::before,
+  .cabecalho__icone::after {
+    display: block;
+    width: 1.125rem;
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--transicao);
+  }
+
+  .cabecalho__icone {
+    position: relative;
+  }
+
+  .cabecalho__icone::before,
+  .cabecalho__icone::after {
+    content: '';
+    position: absolute;
+  }
+
+  .cabecalho__icone::before { top: -6px; }
+  .cabecalho__icone::after { top: 6px; }
+
+  /* Celular com JS: menu recolhido até o usuário abrir. */
+  @media (max-width: 52rem) {
+    :global(.menu-recolhivel #menu-principal) {
+      flex-basis: 100%;
+      display: none;
+      padding-bottom: var(--espaco-3);
+    }
+
+    :global(.menu-recolhivel .cabecalho__alternar[aria-expanded='true'] + #menu-principal) {
+      display: block;
+    }
+
+    :global(.menu-recolhivel #menu-principal ul) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  @media (min-width: 52.0625rem) {
+    .cabecalho__alternar {
+      display: none !important;
+    }
+  }
+</style>

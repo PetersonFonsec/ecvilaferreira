@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import CampaignCard from '@/components/cards/CampaignCard.astro';
+import { getCampanhas } from '@/lib/content';
+
+const campanhas = await getCampanhas();
+const abertas = campanhas.filter((c) => c.status !== 'Encerrada');
+const encerradas = campanhas.filter((c) => c.status === 'Encerrada');
+---
+
+<BaseLayout titulo="Campanhas" descricao="Campanhas de arrecadação do Vila Ferreira. Acompanhe as metas e doe via PIX.">
+  <Hero chapeu="Apoie" titulo="Campanhas" texto="Cada real vira bola, uniforme, lanche e festa para o bairro. Acompanhe as metas e o resultado de cada campanha." />
+
+  <Section titulo="Em andamento" id="abertas">
+    {
+      abertas.length > 0 ? (
+        <ul class="grade" role="list">
+          {abertas.map((campanha) => (
+            <li>
+              <CampaignCard campanha={campanha} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Nenhuma campanha aberta no momento. Você ainda pode <a href="/apoie">apoiar o clube via PIX</a>.</p>
+      )
+    }
+  </Section>
+
+  {
+    encerradas.length > 0 && (
+      <Section tom="claro" titulo="Encerradas" subtitulo="Veja o que conquistamos juntos." id="encerradas">
+        <ul class="grade" role="list">
+          {encerradas.map((campanha) => (
+            <li>
+              <CampaignCard campanha={campanha} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+</BaseLayout>

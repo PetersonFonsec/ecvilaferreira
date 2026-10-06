@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import NewsCard from '@/components/cards/NewsCard.astro';
+import { getNoticias } from '@/lib/content';
+
+const noticias = await getNoticias();
+---
+
+<BaseLayout titulo="Notícias" descricao="Notícias do Vila Ferreira: jogos, campeonatos, eventos e ações na comunidade.">
+  <Hero chapeu="Clube" titulo="Notícias" texto="O que acontece dentro e fora de campo." />
+
+  <Section>
+    {
+      noticias.length > 0 ? (
+        <ul class="grade" role="list">
+          {noticias.map((noticia) => (
+            <li>
+              <NewsCard noticia={noticia} nivelTitulo="h2" />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Nenhuma notícia publicada ainda.</p>
+      )
+    }
+  </Section>
+</BaseLayout>

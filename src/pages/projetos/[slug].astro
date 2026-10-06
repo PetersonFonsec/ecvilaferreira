@@ -1,0 +1,44 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Galeria from '@/components/ui/Galeria.astro';
+import CTA from '@/components/ui/CTA.astro';
+import { getProjetos } from '@/lib/content';
+import { formatarData } from '@/lib/format';
+import { imagemCompartilhamento } from '@/lib/imagem';
+import type { ProjetoSocial } from '@/lib/types';
+
+export const getStaticPaths = (async () => {
+  const projetos = await getProjetos();
+  return projetos.map((projeto) => ({ params: { slug: projeto.slug }, props: { projeto } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  projeto: ProjetoSocial;
+}
+const { projeto } = Astro.props;
+---
+
+<BaseLayout
+  titulo={projeto.titulo}
+  descricao={projeto.resumo}
+  imagem={projeto.imagem && imagemCompartilhamento(projeto.imagem)}
+  imagemAlt={projeto.imagem?.alt}
+  tipo="article"
+>
+  <Hero chapeu={`Projeto social · ${projeto.status}`} titulo={projeto.titulo} texto={projeto.resumo} imagem={projeto.imagem} />
+
+  <div class="container pagina pilha" style="--pilha-espaco: var(--espaco-7)">
+    {projeto.data && <p class="texto-suave">Data: <time datetime={projeto.data}>{formatarData(projeto.data)}</time></p>}
+    <div class="prosa" set:html={projeto.conteudo} />
+    <Galeria itens={projeto.galeria} />
+    <CTA titulo="Ajude este projeto a acontecer" acao={{ rotulo: 'Quero apoiar', href: '/apoie' }} acaoSecundaria={{ rotulo: 'Ver outros projetos', href: '/projetos' }} />
+  </div>
+</BaseLayout>
+
+<style>
+  .pagina {
+    padding-top: var(--espaco-secao);
+  }
+</style>

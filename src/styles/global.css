@@ -1,0 +1,12 @@
+/*
+ * Ordem das camadas: as posteriores vencem as anteriores, independentemente da especificidade.
+ * Os estilos de cada componente ficam no próprio arquivo .astro (escopados) e,
+ * por não estarem em camada, sempre vencem as camadas abaixo.
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+@import './reset.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './components.css';

@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import Botao from '@/components/ui/Botao.astro';
+import CTA from '@/components/ui/CTA.astro';
+import CampaignCard from '@/components/cards/CampaignCard.astro';
+import ProjectCard from '@/components/cards/ProjectCard.astro';
+import NewsCard from '@/components/cards/NewsCard.astro';
+import SponsorCard from '@/components/cards/SponsorCard.astro';
+import {
+  getCampanhas,
+  getConfiguracoes,
+  getNoticias,
+  getPatrocinadores,
+  getProjetos,
+} from '@/lib/content';
+
+const [config, campanhas, projetos, noticias, patrocinadores] = await Promise.all([
+  getConfiguracoes(),
+  getCampanhas(),
+  getProjetos(),
+  getNoticias(),
+  getPatrocinadores(),
+]);
+
+const campanhasAtivas = campanhas.filter((c) => c.status === 'Ativa').slice(0, 3);
+const anos = new Date().getFullYear() - config.fundacao;
+
+const pilares = [
+  { titulo: 'Clube', texto: 'História, fundadores, diretoria e conquistas.', href: '/historia' },
+  { titulo: 'Comunidade', texto: 'Projetos sociais, eventos e ações no bairro.', href: '/projetos' },
+  { titulo: 'Apoie', texto: 'Doe via PIX, ajude uma campanha ou patrocine.', href: '/apoie' },
+  { titulo: 'Loja', texto: 'Produtos oficiais para vestir as cores do clube.', href: '/loja' },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SportsTeam',
+  name: config.nome,
+  sport: 'Futebol',
+  foundingDate: String(config.fundacao),
+  description: config.descricao,
+  url: Astro.site?.toString(),
+  logo: new URL('/favicon.svg', Astro.site).toString(),
+  location: { '@type': 'Place', name: config.cidade, address: config.endereco },
+  sameAs: [config.instagram, config.facebook, config.youtube].filter(Boolean),
+};
+---
+
+<BaseLayout titulo={config.nome} jsonLd={jsonLd}>
+  <Hero variante="inicio" chapeu={`Desde ${config.fundacao}`} titulo={config.slogan} texto={config.descricao}>
+    <Botao href="/apoie" variante="claro">Apoie o clube</Botao>
+    <Botao href="/historia" variante="contorno">Nossa história</Botao>
+  </Hero>
+
+  <Section chapeu={`${anos} anos de várzea`} titulo="Futebol, bairro e gente" id="pilares">
+    <ul class="pilares" role="list">
+      {
+        pilares.map((pilar, i) => (
+          <li class="pilar">
+            <span class="pilar__numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>
+              <a href={pilar.href}>{pilar.titulo}</a>
+            </h3>
+            <p>{pilar.texto}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {
+    campanhasAtivas.length > 0 && (
+      <Section tom="claro" chapeu="Apoie" titulo="Campanhas em andamento" id="campanhas">
+        <ul class="grade" role="list">
+          {campanhasAtivas.map((campanha) => (
+            <li>
+              <CampaignCard campanha={campanha} />
+            </li>
+          ))}
+        </ul>
+        <p class="ver-mais"><a href="/campanhas">Ver todas as campanhas</a></p>
+      </Section>
+    )
+  }
+
+  <Section chapeu="Comunidade" titulo="Projetos sociais" subtitulo="O Vila Ferreira joga dentro e fora de campo." id="projetos">
+    <ul class="grade" role="list">
+      {
+        projetos.slice(0, 3).map((projeto) => (
+          <li>
+            <ProjectCard projeto={projeto} />
+          </li>
+        ))
+      }
+    </ul>
+    <p class="ver-mais"><a href="/projetos">Conheça todos os projetos</a></p>
+  </Section>
+
+  {
+    noticias.length > 0 && (
+      <Section tom="claro" chapeu="Clube" titulo="Últimas notícias" id="noticias">
+        <ul class="grade" role="list">
+          {noticias.slice(0, 3).map((noticia) => (
+            <li>
+              <NewsCard noticia={noticia} />
+            </li>
+          ))}
+        </ul>
+        <p class="ver-mais"><a href="/noticias">Todas as notícias</a></p>
+      </Section>
+    )
+  }
+
+  {
+    patrocinadores.length > 0 && (
+      <Section chapeu="Quem caminha com a gente" titulo="Patrocinadores" id="patrocinadores">
+        <ul class="grade grade--estreita" role="list">
+          {patrocinadores.map((patrocinador) => (
+            <li>
+              <SponsorCard patrocinador={patrocinador} />
+            </li>
+          ))}
+        </ul>
+        <p class="ver-mais"><a href="/patrocinadores">Seja um patrocinador</a></p>
+      </Section>
+    )
+  }
+
+  <div class="container">
+    <CTA
+      titulo="Vista as cores do bairro"
+      texto="Camisas e produtos oficiais. Cada compra ajuda a manter o clube e seus projetos."
+      acao={{ rotulo: 'Ver a loja', href: '/loja' }}
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .pilares {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--espaco-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .pilar {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-2);
+    padding: var(--espaco-5);
+    padding-top: var(--espaco-6);
+    background: var(--cor-superficie);
+    border-top: 6px solid var(--cor-marca);
+    border-radius: var(--raio-sm);
+  }
+
+  .pilar:has(a:hover) {
+    box-shadow: var(--sombra);
+  }
+
+  .pilar__numero {
+    font-family: var(--fonte-titulo);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--cor-destaque);
+  }
+
+  .pilar a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pilar a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .ver-mais {
+    margin-top: var(--espaco-6);
+    font-weight: 700;
+  }
+
+</style>

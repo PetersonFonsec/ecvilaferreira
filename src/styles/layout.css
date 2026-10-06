@@ -1,0 +1,42 @@
+/* Primitivas de layout reaproveitadas pelas páginas e componentes. */
+@layer layout {
+  .container {
+    width: min(100% - 2 * var(--margem-lateral), var(--largura-max));
+    margin-inline: auto;
+  }
+
+  /* Grade de cards que se adapta sem media queries. */
+  .grade {
+    --min: 16rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--min), 100%), 1fr));
+    gap: var(--espaco-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .grade--estreita { --min: 12rem; }
+  .grade--larga { --min: 20rem; }
+
+  .pilha > * + * {
+    margin-top: var(--pilha-espaco, var(--espaco-4));
+  }
+}
+
+@layer utilities {
+  .visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .texto-suave {
+    color: var(--cor-texto-suave);
+  }
+}

@@ -1,0 +1,81 @@
+---
+/**
+ * Seção de página com título opcional. Use `tom` para alternar o fundo entre seções.
+ */
+interface Props {
+  titulo?: string;
+  subtitulo?: string;
+  /** Rótulo pequeno acima do título (ex.: "Comunidade"). */
+  chapeu?: string;
+  tom?: 'padrao' | 'claro' | 'marca';
+  id?: string;
+  class?: string;
+}
+
+const { titulo, subtitulo, chapeu, tom = 'padrao', id, class: classe } = Astro.props;
+const idTitulo = id ? `${id}-titulo` : undefined;
+---
+
+<section class:list={['secao', `secao--${tom}`, classe]} id={id} aria-labelledby={titulo ? idTitulo : undefined}>
+  <div class="container">
+    {
+      titulo && (
+        <header class="secao__cabecalho">
+          {chapeu && <p class="secao__chapeu">{chapeu}</p>}
+          <h2 id={idTitulo}>{titulo}</h2>
+          {subtitulo && <p class="secao__subtitulo">{subtitulo}</p>}
+          <slot name="acao" />
+        </header>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .secao {
+    padding-block: var(--espaco-secao);
+  }
+
+  .secao--claro {
+    background: var(--cor-superficie);
+  }
+
+  .secao--marca {
+    background: var(--cor-marca);
+    color: var(--cor-sobre-marca);
+  }
+
+  .secao--marca :global(a:not([class])) {
+    color: inherit;
+  }
+
+  .secao__cabecalho {
+    display: grid;
+    gap: var(--espaco-2);
+    max-width: var(--largura-texto);
+    margin-bottom: var(--espaco-6);
+  }
+
+  .secao__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cor-destaque);
+  }
+
+  .secao--marca .secao__chapeu {
+    color: var(--verde-200);
+  }
+
+  .secao__subtitulo {
+    font-size: var(--texto-lg);
+    color: var(--cor-texto-suave);
+  }
+
+  .secao--marca .secao__subtitulo {
+    color: var(--verde-100);
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import type { ItemGaleria } from '@/lib/types';
+
+interface Props {
+  itens: ItemGaleria[];
+  titulo?: string;
+}
+const { itens, titulo = 'Galeria' } = Astro.props;
+---
+
+{
+  itens.length > 0 && (
+    <section class="galeria" aria-label={titulo}>
+      <h2>{titulo}</h2>
+      <ul class="grade grade--estreita" role="list">
+        {itens.map((item) => (
+          <li>
+            <figure>
+              <ResponsiveImage imagem={item.imagem} proporcao={4 / 3} sizes="(min-width: 40rem) 25vw, 50vw" />
+              {item.legenda && <figcaption>{item.legenda}</figcaption>}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .galeria {
+    display: grid;
+    gap: var(--espaco-5);
+  }
+
+  figure {
+    display: grid;
+    gap: var(--espaco-2);
+  }
+
+  figure :global(img) {
+    border-radius: var(--raio);
+  }
+
+  figcaption {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+  }
+</style>

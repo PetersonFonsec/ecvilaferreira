@@ -1,0 +1,138 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Galeria from '@/components/ui/Galeria.astro';
+import ProgressBar from '@/components/ui/ProgressBar.astro';
+import Pix from '@/components/ui/Pix.astro';
+import Botao from '@/components/ui/Botao.astro';
+import { getCampanhas, getConfiguracoes } from '@/lib/content';
+import { formatarData, formatarMoeda, percentual } from '@/lib/format';
+import { imagemCompartilhamento } from '@/lib/imagem';
+import { linkWhatsApp } from '@/lib/whatsapp';
+import type { Campanha } from '@/lib/types';
+
+export const getStaticPaths = (async () => {
+  const campanhas = await getCampanhas();
+  return campanhas.map((campanha) => ({ params: { slug: campanha.slug }, props: { campanha } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  campanha: Campanha;
+}
+const { campanha } = Astro.props;
+const config = await getConfiguracoes();
+
+const encerrada = campanha.status === 'Encerrada';
+const pct = percentual(campanha.arrecadado, campanha.meta);
+
+// Descrição pensada para o preview do WhatsApp: progresso primeiro, depois o resumo.
+const descricaoCompartilhamento = encerrada
+  ? `Campanha encerrada: ${formatarMoeda(campanha.arrecadado)} arrecadados. ${campanha.resumo}`
+  : `${pct}% da meta: ${formatarMoeda(campanha.arrecadado)} de ${formatarMoeda(campanha.meta)}. ${campanha.resumo}`;
+
+const urlPagina = new URL(Astro.url.pathname, Astro.site).toString();
+// Sem número de destino, o WhatsApp abre a lista de contatos para a pessoa escolher.
+const compartilhar = linkWhatsApp('', `${campanha.titulo}: ajude o Vila Ferreira! ${urlPagina}`);
+---
+
+<BaseLayout
+  titulo={campanha.titulo}
+  descricao={descricaoCompartilhamento}
+  imagem={campanha.imagem && imagemCompartilhamento(campanha.imagem)}
+  imagemAlt={campanha.imagem?.alt}
+  tipo="article"
+  publicadoEm={campanha.dataInicio}
+>
+  <Hero chapeu={`Campanha · ${campanha.status}`} titulo={campanha.titulo} texto={campanha.resumo} imagem={campanha.imagem} />
+
+  <div class="container campanha">
+    <div class="campanha__principal pilha" style="--pilha-espaco: var(--espaco-7)">
+      {
+        encerrada && campanha.resultado && (
+          <section class="resultado" aria-labelledby="resultado-titulo">
+            <h2 id="resultado-titulo">Resultado</h2>
+            <div class="prosa" set:html={campanha.resultado} />
+          </section>
+        )
+      }
+      <section aria-labelledby="sobre-titulo">
+        <h2 id="sobre-titulo" class="visualmente-oculto">Sobre a campanha</h2>
+        <div class="prosa" set:html={campanha.descricao} />
+      </section>
+      <Galeria itens={campanha.galeria} />
+    </div>
+
+    <aside class="campanha__lateral pilha" aria-label="Arrecadação">
+      <ProgressBar arrecadado={campanha.arrecadado} meta={campanha.meta} />
+      {
+        (campanha.dataInicio || campanha.dataFim) && (
+          <p class="texto-suave">
+            {campanha.dataInicio && <>De <time datetime={campanha.dataInicio}>{formatarData(campanha.dataInicio)}</time></>}
+            {campanha.dataFim && <> até <time datetime={campanha.dataFim}>{formatarData(campanha.dataFim)}</time></>}
+          </p>
+        )
+      }
+      {
+        !encerrada && (
+          <>
+            <h2 class="campanha__doar">Doe via PIX</h2>
+            <Pix
+              chave={campanha.chavePix ?? config.pix.chave}
+              recebedor={config.pix.recebedor}
+              cidade={config.pix.cidade}
+              descricao={campanha.titulo}
+              qrCode={campanha.qrCode}
+            />
+          </>
+        )
+      }
+      <Botao href={compartilhar} variante="whatsapp" externo>Compartilhar no WhatsApp</Botao>
+      <p class="texto-suave">Os valores são atualizados manualmente pela diretoria. <a href="/transparencia">Veja a prestação de contas.</a></p>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .campanha {
+    display: grid;
+    gap: var(--espaco-7);
+    padding-top: var(--espaco-secao);
+  }
+
+  @media (min-width: 60rem) {
+    .campanha {
+      grid-template-columns: minmax(0, 1fr) 24rem;
+      align-items: start;
+    }
+
+    .campanha__lateral {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+
+  .campanha__lateral {
+    padding: var(--espaco-5);
+    background: var(--cor-superficie);
+    border-radius: var(--raio-lg);
+    border-top: 6px solid var(--cor-marca);
+    box-shadow: var(--sombra);
+  }
+
+  .campanha__lateral :global(.pix) {
+    padding: 0;
+    border: none;
+  }
+
+  .campanha__doar {
+    font-size: var(--titulo-sm);
+  }
+
+  .resultado {
+    padding: var(--espaco-5);
+    background: var(--cor-marca-suave);
+    border-left: 6px solid var(--cor-marca);
+    border-radius: var(--raio);
+  }
+</style>

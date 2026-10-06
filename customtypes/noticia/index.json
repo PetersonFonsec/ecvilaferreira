@@ -1,0 +1,64 @@
+{
+  "id": "noticia",
+  "label": "Notícia",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "Slug (URL)"
+        }
+      },
+      "titulo": {
+        "type": "Text",
+        "config": {
+          "label": "Título"
+        }
+      },
+      "resumo": {
+        "type": "Text",
+        "config": {
+          "label": "Resumo"
+        }
+      },
+      "imagem": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem de capa",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "data_publicacao": {
+        "type": "Date",
+        "config": {
+          "label": "Data de publicação"
+        }
+      },
+      "categoria": {
+        "type": "Select",
+        "config": {
+          "label": "Categoria",
+          "options": [
+            "Clube",
+            "Futebol",
+            "Comunidade",
+            "Campanhas"
+          ],
+          "default_value": "Clube"
+        }
+      },
+      "conteudo": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Conteúdo",
+          "multi": "paragraph,strong,em,hyperlink,heading2,heading3,list-item,o-list-item,image,embed",
+          "allowTargetBlank": true
+        }
+      }
+    }
+  }
+}

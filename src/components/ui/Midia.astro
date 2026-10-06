@@ -1,0 +1,33 @@
+---
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import Escudo from '@/components/ui/Escudo.astro';
+import type { Imagem } from '@/lib/types';
+
+/** Imagem de card. Sem imagem cadastrada, mostra um fundo com o escudo do clube. */
+interface Props {
+  imagem?: Imagem;
+  proporcao?: number;
+  sizes?: string;
+}
+const { imagem, proporcao = 16 / 10, sizes } = Astro.props;
+---
+
+{
+  imagem ? (
+    <ResponsiveImage imagem={imagem} proporcao={proporcao} sizes={sizes} class="card__midia" />
+  ) : (
+    <div class="card__midia midia-vazia" style={`aspect-ratio: ${proporcao}`} aria-hidden="true">
+      <Escudo tamanho={56} />
+    </div>
+  )
+}
+
+<style>
+  .midia-vazia {
+    display: grid;
+    place-items: center;
+    background-color: var(--cor-marca);
+    background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 2rem, transparent 2rem 4rem);
+    opacity: 0.95;
+  }
+</style>

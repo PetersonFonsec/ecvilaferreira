@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import CTA from '@/components/ui/CTA.astro';
+import ProjectCard from '@/components/cards/ProjectCard.astro';
+import { getProjetos } from '@/lib/content';
+
+const projetos = await getProjetos();
+---
+
+<BaseLayout titulo="Projetos sociais" descricao="Projetos sociais, eventos e ações do Vila Ferreira no bairro.">
+  <Hero chapeu="Comunidade" titulo="Projetos sociais" texto="Futebol é a nossa porta de entrada. A comunidade é a razão de existir." />
+
+  <Section>
+    <ul class="grade" role="list">
+      {
+        projetos.map((projeto) => (
+          <li>
+            <ProjectCard projeto={projeto} nivelTitulo="h2" />
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <div class="container">
+    <CTA titulo="Quer ajudar um projeto?" texto="Doe, seja voluntário ou leve sua empresa para perto do bairro." acao={{ rotulo: 'Como apoiar', href: '/apoie' }} />
+  </div>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import ProductCard from '@/components/cards/ProductCard.astro';
+import { getProdutos } from '@/lib/content';
+
+const produtos = await getProdutos();
+---
+
+<BaseLayout titulo="Loja oficial" descricao="Camisas e produtos oficiais do Vila Ferreira. Peça pelo WhatsApp.">
+  <Hero chapeu="Loja" titulo="Loja oficial" texto="Escolha o produto e finalize o pedido direto com o clube pelo WhatsApp." />
+
+  <Section>
+    {
+      produtos.length > 0 ? (
+        <ul class="grade" role="list">
+          {produtos.map((produto) => (
+            <li>
+              <ProductCard produto={produto} nivelTitulo="h2" />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Os produtos ainda não foram cadastrados.</p>
+      )
+    }
+  </Section>
+</BaseLayout>

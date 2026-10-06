@@ -1,0 +1,67 @@
+---
+import Botao from '@/components/ui/Botao.astro';
+
+/** Chamada para ação: título curto, texto e até dois botões. */
+interface Props {
+  titulo: string;
+  texto?: string;
+  acao: { rotulo: string; href: string; externo?: boolean };
+  acaoSecundaria?: { rotulo: string; href: string; externo?: boolean };
+}
+
+const { titulo, texto, acao, acaoSecundaria } = Astro.props;
+---
+
+<aside class="cta">
+  <div class="cta__texto">
+    <h2 class="cta__titulo">{titulo}</h2>
+    {texto && <p>{texto}</p>}
+  </div>
+  <div class="cta__acoes">
+    <Botao href={acao.href} variante="claro" externo={acao.externo}>{acao.rotulo}</Botao>
+    {
+      acaoSecundaria && (
+        <a class="cta__link" href={acaoSecundaria.href} target={acaoSecundaria.externo ? '_blank' : undefined} rel={acaoSecundaria.externo ? 'noopener' : undefined}>
+          {acaoSecundaria.rotulo}
+        </a>
+      )
+    }
+  </div>
+</aside>
+
+<style>
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-5);
+    padding: clamp(var(--espaco-5), 4vw, var(--espaco-7));
+    background: var(--cor-marca-forte);
+    color: var(--cor-sobre-marca);
+    border-radius: var(--raio-lg);
+    border-left: 8px solid var(--cor-destaque);
+  }
+
+  .cta__texto {
+    display: grid;
+    gap: var(--espaco-2);
+    max-width: 36rem;
+  }
+
+  .cta__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .cta__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-4);
+  }
+
+  .cta__link {
+    color: var(--branco);
+    font-weight: 600;
+  }
+</style>

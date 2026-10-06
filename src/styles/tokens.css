@@ -1,0 +1,82 @@
+/*
+ * Tokens de design. Toda cor, fonte, espaçamento e raio do site sai daqui.
+ * Para evoluir a identidade visual, comece por este arquivo.
+ */
+@layer tokens {
+  :root {
+    /* Paleta oficial: verde e branco */
+    --verde-950: #072a17;
+    --verde-900: #0a3d22;
+    --verde-800: #0d4d2b;
+    --verde-700: #0f5c32;
+    --verde-600: #13753f;
+    --verde-500: #1b8f4e;
+    --verde-200: #b9dcc6;
+    --verde-100: #e3f1e8;
+    --branco: #ffffff;
+
+    /* Apoio: tons de "cal" (linhas do campo) e "terra" (o chão da várzea) */
+    --cal: #f6f4ee;
+    --cal-escura: #e9e5da;
+    --terra: #a8582a;
+    --ouro: #d4a72c;
+    --tinta: #15201a;
+    --tinta-suave: #4a5850;
+    --borda: #d9ddd6;
+
+    /* Papéis de cor (use estes nos componentes, não a paleta crua) */
+    --cor-fundo: var(--cal);
+    --cor-superficie: var(--branco);
+    --cor-texto: var(--tinta);
+    --cor-texto-suave: var(--tinta-suave);
+    --cor-marca: var(--verde-700);
+    --cor-marca-forte: var(--verde-900);
+    --cor-marca-suave: var(--verde-100);
+    --cor-sobre-marca: var(--branco);
+    --cor-destaque: var(--terra);
+    --cor-conquista: var(--ouro);
+    --cor-link: var(--verde-700);
+    --cor-foco: var(--ouro);
+    --cor-borda: var(--borda);
+
+    /* Tipografia */
+    --fonte-titulo: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+    --fonte-texto: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    --texto-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+    --texto-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    --texto-lg: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+    --titulo-sm: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    --titulo-md: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
+    --titulo-lg: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+    --titulo-xl: clamp(2.75rem, 1.8rem + 4.5vw, 5.5rem);
+
+    --altura-linha: 1.6;
+    --altura-linha-titulo: 1.05;
+
+    /* Espaçamento */
+    --espaco-1: 0.25rem;
+    --espaco-2: 0.5rem;
+    --espaco-3: 0.75rem;
+    --espaco-4: 1rem;
+    --espaco-5: 1.5rem;
+    --espaco-6: 2rem;
+    --espaco-7: 3rem;
+    --espaco-8: 4rem;
+    --espaco-secao: clamp(3rem, 2rem + 5vw, 6rem);
+
+    /* Layout */
+    --largura-max: 72rem;
+    --largura-texto: 42rem;
+    --margem-lateral: clamp(1rem, 4vw, 2rem);
+
+    /* Forma */
+    --raio-sm: 4px;
+    --raio: 8px;
+    --raio-lg: 16px;
+    --sombra: 0 1px 2px rgb(10 61 34 / 0.08), 0 4px 16px rgb(10 61 34 / 0.08);
+    --sombra-forte: 0 2px 4px rgb(10 61 34 / 0.12), 0 12px 32px rgb(10 61 34 / 0.14);
+
+    --transicao: 160ms ease;
+  }
+}

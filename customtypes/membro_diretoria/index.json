@@ -1,0 +1,50 @@
+{
+  "id": "membro_diretoria",
+  "label": "Membro da Diretoria",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "nome": {
+        "type": "Text",
+        "config": {
+          "label": "Nome"
+        }
+      },
+      "cargo": {
+        "type": "Text",
+        "config": {
+          "label": "Cargo"
+        }
+      },
+      "foto": {
+        "type": "Image",
+        "config": {
+          "label": "Foto",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "bio": {
+        "type": "Text",
+        "config": {
+          "label": "Mini bio"
+        }
+      },
+      "mandato": {
+        "type": "Text",
+        "config": {
+          "label": "Mandato",
+          "placeholder": "Ex.: 2025–2027"
+        }
+      },
+      "ordem": {
+        "type": "Number",
+        "config": {
+          "label": "Ordem de exibição"
+        }
+      }
+    }
+  }
+}

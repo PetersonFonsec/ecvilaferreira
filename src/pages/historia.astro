@@ -1,0 +1,124 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import CTA from '@/components/ui/CTA.astro';
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import { getConfiguracoes, getHistoria } from '@/lib/content';
+
+const [config, eventos] = await Promise.all([getConfiguracoes(), getHistoria()]);
+const conquistas = eventos.filter((e) => e.tipo === 'Conquista');
+---
+
+<BaseLayout titulo="Nossa história" descricao={`A trajetória do ${config.nome}, de ${config.fundacao} até hoje: fundadores, marcos e conquistas.`}>
+  <Hero chapeu="Clube" titulo="Uma história construída no bairro" texto={`Desde ${config.fundacao}, o Vila Ferreira reúne gerações em torno do futebol de várzea em ${config.cidade}.`} />
+
+  <Section titulo="Linha do tempo" id="linha-do-tempo">
+    <ol class="linha" role="list">
+      {
+        eventos.map((evento) => (
+          <li class:list={['marco', `marco--${evento.tipo === 'Conquista' ? 'conquista' : evento.tipo === 'Fundação' ? 'fundacao' : 'padrao'}`]}>
+            <p class="marco__ano">{evento.ano}</p>
+            <div class="marco__corpo">
+              <h3>{evento.titulo}</h3>
+              <p>{evento.descricao}</p>
+              {evento.imagem && <ResponsiveImage imagem={evento.imagem} sizes="(min-width: 48rem) 40rem, 100vw" />}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {
+    conquistas.length > 0 && (
+      <Section tom="claro" chapeu="Sala de troféus" titulo="Conquistas" id="conquistas">
+        <ul class="grade grade--estreita" role="list">
+          {conquistas.map((c) => (
+            <li class="trofeu">
+              <span class="trofeu__ano">{c.ano}</span>
+              <span>{c.titulo}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  <div class="container">
+    <CTA titulo="Conheça quem conduz o clube hoje" acao={{ rotulo: 'Ver a diretoria', href: '/diretoria' }} />
+  </div>
+</BaseLayout>
+
+<style>
+  .linha {
+    display: grid;
+    gap: var(--espaco-6);
+    padding: 0;
+    list-style: none;
+    border-left: 4px solid var(--cor-marca);
+    max-width: 48rem;
+  }
+
+  .marco {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-2);
+    padding-left: var(--espaco-6);
+  }
+
+  .marco::before {
+    content: '';
+    position: absolute;
+    top: 0.6rem;
+    left: -0.75rem;
+    width: 1.25rem;
+    aspect-ratio: 1;
+    border: 4px solid var(--cor-fundo);
+    border-radius: 50%;
+    background: var(--cor-marca);
+  }
+
+  .marco--conquista::before {
+    background: var(--cor-conquista);
+  }
+
+  .marco--fundacao::before {
+    background: var(--cor-destaque);
+  }
+
+  .marco__ano {
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-md);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--cor-marca);
+  }
+
+  .marco__corpo {
+    display: grid;
+    gap: var(--espaco-2);
+  }
+
+  .marco__corpo :global(img) {
+    margin-top: var(--espaco-3);
+    border-radius: var(--raio);
+  }
+
+  .trofeu {
+    display: grid;
+    gap: var(--espaco-1);
+    padding: var(--espaco-5);
+    border-top: 6px solid var(--cor-conquista);
+    background: var(--cal);
+    border-radius: var(--raio-sm);
+    font-weight: 600;
+  }
+
+  .trofeu__ano {
+    font-family: var(--fonte-titulo);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-marca);
+  }
+</style>

@@ -1,0 +1,129 @@
+{
+  "id": "campanha",
+  "label": "Campanha de arrecadação",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "Slug (URL)"
+        }
+      },
+      "titulo": {
+        "type": "Text",
+        "config": {
+          "label": "Título"
+        }
+      },
+      "resumo": {
+        "type": "Text",
+        "config": {
+          "label": "Resumo (aparece no WhatsApp)"
+        }
+      },
+      "imagem": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem de capa (1200×630 ideal)",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "descricao": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Descrição",
+          "multi": "paragraph,strong,em,hyperlink,heading2,heading3,list-item,o-list-item,image,embed",
+          "allowTargetBlank": true
+        }
+      },
+      "status": {
+        "type": "Select",
+        "config": {
+          "label": "Status",
+          "options": [
+            "Ativa",
+            "Em breve",
+            "Encerrada"
+          ],
+          "default_value": "Ativa"
+        }
+      },
+      "data_inicio": {
+        "type": "Date",
+        "config": {
+          "label": "Início"
+        }
+      },
+      "data_fim": {
+        "type": "Date",
+        "config": {
+          "label": "Término"
+        }
+      }
+    },
+    "Arrecadação": {
+      "meta": {
+        "type": "Number",
+        "config": {
+          "label": "Meta (R$)"
+        }
+      },
+      "arrecadado": {
+        "type": "Number",
+        "config": {
+          "label": "Valor arrecadado (R$)"
+        }
+      },
+      "chave_pix": {
+        "type": "Text",
+        "config": {
+          "label": "Chave PIX da campanha (vazio = chave geral)"
+        }
+      },
+      "qr_code": {
+        "type": "Image",
+        "config": {
+          "label": "QR Code (opcional; vazio = gerado automaticamente)",
+          "constraint": {},
+          "thumbnails": []
+        }
+      }
+    },
+    "Resultado": {
+      "resultado": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Resultado da campanha",
+          "multi": "paragraph,strong,em,hyperlink,heading2,heading3,list-item,o-list-item,image,embed",
+          "allowTargetBlank": true
+        }
+      },
+      "galeria": {
+        "type": "Group",
+        "config": {
+          "label": "Galeria",
+          "fields": {
+            "imagem": {
+              "type": "Image",
+              "config": {
+                "label": "Imagem",
+                "constraint": {},
+                "thumbnails": []
+              }
+            },
+            "legenda": {
+              "type": "Text",
+              "config": {
+                "label": "Legenda"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

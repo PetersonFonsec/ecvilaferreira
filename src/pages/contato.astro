@@ -1,0 +1,86 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import Botao from '@/components/ui/Botao.astro';
+import { getConfiguracoes } from '@/lib/content';
+import { linkWhatsApp } from '@/lib/whatsapp';
+
+const config = await getConfiguracoes();
+const redes = [
+  { rotulo: 'Instagram', href: config.instagram },
+  { rotulo: 'Facebook', href: config.facebook },
+  { rotulo: 'YouTube', href: config.youtube },
+].filter((r) => r.href);
+---
+
+<BaseLayout titulo="Contato" descricao={`Fale com o ${config.nome} pelo WhatsApp, e-mail ou redes sociais.`}>
+  <Hero chapeu="Contato" titulo="Fale com a gente" texto="Dúvidas, parcerias, pedidos da loja ou vontade de ajudar: o caminho mais rápido é o WhatsApp.">
+    <Botao href={linkWhatsApp(config.whatsapp, 'Olá, Vila Ferreira!')} variante="claro" externo>Chamar no WhatsApp</Botao>
+  </Hero>
+
+  <Section>
+    <dl class="contatos">
+      {
+        config.email && (
+          <div>
+            <dt>E-mail</dt>
+            <dd><a href={`mailto:${config.email}`}>{config.email}</a></dd>
+          </div>
+        )
+      }
+      {
+        config.endereco && (
+          <div>
+            <dt>Endereço</dt>
+            <dd>{config.endereco}<br />{config.cidade}</dd>
+          </div>
+        )
+      }
+      {
+        redes.length > 0 && (
+          <div>
+            <dt>Redes sociais</dt>
+            <dd>
+              <ul role="list">
+                {redes.map((r) => <li><a href={r.href} rel="noopener">{r.rotulo}</a></li>)}
+              </ul>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contatos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: var(--espaco-5);
+  }
+
+  .contatos > div {
+    padding: var(--espaco-5);
+    background: var(--cor-superficie);
+    border-top: 6px solid var(--cor-marca);
+    border-radius: var(--raio-sm);
+  }
+
+  dt {
+    margin-bottom: var(--espaco-2);
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  dd ul {
+    padding: 0;
+    list-style: none;
+  }
+</style>

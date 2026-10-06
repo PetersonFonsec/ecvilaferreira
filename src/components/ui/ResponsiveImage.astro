@@ -1,0 +1,35 @@
+---
+import { srcsetImagem, urlImagem } from '@/lib/imagem';
+import type { Imagem } from '@/lib/types';
+
+interface Props {
+  imagem: Imagem;
+  sizes?: string;
+  class?: string;
+  /** true para a imagem principal da página (LCP): carrega antes e sem lazy loading. */
+  prioridade?: boolean;
+  /** Proporção desejada (ex.: 16/9). Recorta a imagem no Prismic. */
+  proporcao?: number;
+}
+
+const { imagem, sizes = '(min-width: 72rem) 33vw, (min-width: 40rem) 50vw, 100vw', class: classe, prioridade = false, proporcao } = Astro.props;
+
+const largura = imagem.width ?? 1200;
+const altura = proporcao ? Math.round(largura / proporcao) : imagem.height;
+const recorte: Record<string, string> = proporcao ? { ar: `${Math.round(proporcao * 100)}:100`, fit: 'crop' } : {};
+const src = urlImagem(imagem, { ...recorte, w: Math.min(largura, 1280), auto: 'format,compress' });
+const srcset = srcsetImagem(imagem, recorte);
+---
+
+<img
+  class={classe}
+  src={src}
+  srcset={srcset}
+  sizes={srcset ? sizes : undefined}
+  alt={imagem.alt}
+  width={largura}
+  height={altura}
+  loading={prioridade ? 'eager' : 'lazy'}
+  fetchpriority={prioridade ? 'high' : undefined}
+  decoding="async"
+/>

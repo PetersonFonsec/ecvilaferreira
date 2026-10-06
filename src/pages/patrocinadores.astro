@@ -1,0 +1,72 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import CTA from '@/components/ui/CTA.astro';
+import SponsorCard from '@/components/cards/SponsorCard.astro';
+import { getConfiguracoes, getPatrocinadores } from '@/lib/content';
+import { linkWhatsApp } from '@/lib/whatsapp';
+
+const [config, patrocinadores] = await Promise.all([getConfiguracoes(), getPatrocinadores()]);
+
+const vantagens = [
+  { titulo: 'Visibilidade local', texto: 'Sua marca no uniforme, no campo, nas redes e neste site.' },
+  { titulo: 'Impacto social', texto: 'Seu apoio vira projetos para crianças e famílias do bairro.' },
+  { titulo: 'Relação com a comunidade', texto: 'Esteja perto de quem compra no seu comércio todos os dias.' },
+];
+---
+
+<BaseLayout titulo="Patrocinadores" descricao="Empresas que apoiam o Vila Ferreira e como sua empresa pode se tornar patrocinadora.">
+  <Hero chapeu="Apoie" titulo="Patrocinadores" texto="Empresas que acreditam no futebol de várzea e na força do bairro." />
+
+  <Section titulo="Quem apoia o Vila Ferreira" id="atuais">
+    {
+      patrocinadores.length > 0 ? (
+        <ul class="grade grade--estreita" role="list">
+          {patrocinadores.map((patrocinador) => (
+            <li>
+              <SponsorCard patrocinador={patrocinador} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Seja o primeiro patrocinador do clube.</p>
+      )
+    }
+  </Section>
+
+  <Section tom="claro" chapeu="Seja um patrocinador" titulo="Por que patrocinar" id="seja-patrocinador">
+    <ul class="grade" role="list">
+      {
+        vantagens.map((v) => (
+          <li class="vantagem">
+            <h3>{v.titulo}</h3>
+            <p>{v.texto}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <div class="container">
+    <CTA
+      titulo="Vamos conversar?"
+      texto="Temos cotas para empresas de todos os tamanhos, do comércio do bairro a grandes marcas."
+      acao={{
+        rotulo: 'Falar no WhatsApp',
+        href: linkWhatsApp(config.whatsapp, 'Olá! Tenho interesse em patrocinar o Vila Ferreira.'),
+        externo: true,
+      }}
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .vantagem {
+    display: grid;
+    gap: var(--espaco-2);
+    padding: var(--espaco-5);
+    border-left: 6px solid var(--cor-marca);
+    background: var(--cal);
+  }
+</style>

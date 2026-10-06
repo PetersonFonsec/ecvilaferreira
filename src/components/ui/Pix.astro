@@ -1,0 +1,148 @@
+---
+import { codigoPix, qrCodeSvg } from '@/lib/pix';
+import type { Imagem } from '@/lib/types';
+
+/**
+ * Bloco de doação via PIX: QR Code + código "copia e cola" + chave.
+ * O QR Code é gerado no build. Se a campanha tiver um QR Code enviado no Prismic, ele tem prioridade.
+ */
+interface Props {
+  chave: string;
+  recebedor: string;
+  cidade: string;
+  descricao?: string;
+  qrCode?: Imagem;
+}
+
+const { chave, recebedor, cidade, descricao, qrCode } = Astro.props;
+const codigo = codigoPix({ chave, recebedor, cidade, descricao });
+const svg = qrCode ? undefined : await qrCodeSvg(codigo);
+const id = `pix-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="pix">
+  <figure class="pix__qr">
+    {qrCode ? <img src={qrCode.url} alt="QR Code PIX" width="240" height="240" loading="lazy" /> : <Fragment set:html={svg} />}
+    <figcaption>Aponte a câmera do app do seu banco</figcaption>
+  </figure>
+
+  <div class="pix__dados pilha">
+    <div>
+      <p class="pix__rotulo">Chave PIX</p>
+      <p class="pix__chave">{chave}</p>
+    </div>
+    <div>
+      <label class="pix__rotulo" for={id}>PIX copia e cola</label>
+      <div class="pix__copiar">
+        <input id={id} class="pix__codigo" type="text" value={codigo} readonly />
+        <button class="pix__botao" type="button" data-copiar={id} hidden>Copiar</button>
+      </div>
+      <p class="pix__ajuda texto-suave" aria-live="polite" data-status={id}></p>
+    </div>
+    <p class="texto-suave">Recebedor: {recebedor}</p>
+  </div>
+</div>
+
+<script>
+  // Melhoria progressiva: sem JS, o código continua visível e selecionável no campo de texto.
+  for (const botao of document.querySelectorAll<HTMLButtonElement>('[data-copiar]')) {
+    if (!navigator.clipboard) continue;
+    const id = botao.dataset.copiar!;
+    const campo = document.getElementById(id) as HTMLInputElement | null;
+    const status = document.querySelector<HTMLElement>(`[data-status="${id}"]`);
+    botao.hidden = false;
+    botao.addEventListener('click', async () => {
+      if (!campo) return;
+      await navigator.clipboard.writeText(campo.value);
+      botao.textContent = 'Copiado!';
+      if (status) status.textContent = 'Código PIX copiado. Cole no app do seu banco.';
+      setTimeout(() => (botao.textContent = 'Copiar'), 2500);
+    });
+  }
+</script>
+
+<style>
+  .pix {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-5);
+    padding: var(--espaco-5);
+    background: var(--cor-superficie);
+    border: 2px solid var(--cor-marca-suave);
+    border-radius: var(--raio-lg);
+  }
+
+  .pix__qr {
+    display: grid;
+    justify-items: center;
+    gap: var(--espaco-2);
+    width: 12rem;
+    font-size: var(--texto-sm);
+    text-align: center;
+    color: var(--cor-texto-suave);
+  }
+
+  .pix__qr :global(svg),
+  .pix__qr img {
+    width: 100%;
+    height: auto;
+  }
+
+  .pix__dados {
+    flex: 1 1 16rem;
+    min-width: 0;
+  }
+
+  .pix__rotulo {
+    display: block;
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+  }
+
+  .pix__chave {
+    font-size: var(--texto-lg);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .pix__copiar {
+    display: flex;
+    gap: var(--espaco-2);
+  }
+
+  .pix__codigo {
+    flex: 1;
+    min-width: 0;
+    padding: var(--espaco-2) var(--espaco-3);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+    background: var(--cal);
+    font-family: ui-monospace, monospace;
+    font-size: var(--texto-sm);
+  }
+
+  .pix__botao {
+    padding: var(--espaco-2) var(--espaco-4);
+    border: none;
+    border-radius: var(--raio-sm);
+    background: var(--cor-marca);
+    color: var(--cor-sobre-marca);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .pix__botao[hidden] {
+    display: none;
+  }
+
+  .pix__botao:hover {
+    background: var(--cor-marca-forte);
+  }
+
+  .pix__ajuda:empty {
+    display: none;
+  }
+</style>

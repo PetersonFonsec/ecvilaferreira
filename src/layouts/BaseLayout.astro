@@ -1,0 +1,64 @@
+---
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@/styles/global.css';
+
+import SEO from '@/components/layout/SEO.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getConfiguracoes } from '@/lib/content';
+import { imagemCompartilhamento } from '@/lib/imagem';
+import type { ComponentProps } from 'astro/types';
+
+type PropsSEO = ComponentProps<typeof SEO>;
+
+interface Props extends Omit<PropsSEO, 'nomeSite' | 'descricao'> {
+  descricao?: string;
+}
+
+const config = await getConfiguracoes();
+const { descricao = config.descricao, imagem, ...seo } = Astro.props;
+const imagemPadrao = config.ogImage ? imagemCompartilhamento(config.ogImage) : undefined;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a3d22" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEO {...seo} descricao={descricao} imagem={imagem ?? imagemPadrao} nomeSite={config.nome} />
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Header nome={config.nome} />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Footer config={config} />
+  </body>
+</html>
+
+<style>
+  .pular {
+    position: absolute;
+    top: var(--espaco-2);
+    left: var(--espaco-2);
+    z-index: 100;
+    padding: var(--espaco-2) var(--espaco-4);
+    background: var(--cor-marca-forte);
+    color: var(--cor-sobre-marca);
+    border-radius: var(--raio-sm);
+    transform: translateY(-200%);
+  }
+
+  .pular:focus {
+    transform: none;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

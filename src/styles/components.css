@@ -1,0 +1,97 @@
+/*
+ * Estrutura comum dos cards (projeto, campanha, notícia, produto...).
+ * Cada card adiciona só o que tem de específico no próprio componente.
+ */
+@layer components {
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio);
+    overflow: hidden;
+    transition: box-shadow var(--transicao), transform var(--transicao);
+  }
+
+  .card:has(.card__link:hover) {
+    box-shadow: var(--sombra-forte);
+    transform: translateY(-2px);
+  }
+
+  .card:has(.card__link:focus-visible) {
+    outline: 3px solid var(--cor-foco);
+    outline-offset: 2px;
+  }
+
+  .card__midia {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    object-fit: cover;
+    background: var(--cor-marca-suave);
+  }
+
+  .card__corpo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--espaco-3);
+    padding: var(--espaco-5);
+  }
+
+  .card__titulo {
+    font-size: var(--titulo-sm);
+  }
+
+  .card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* O link do título cobre o card inteiro: um único link por card, bom para leitores de tela. */
+  .card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card__link:focus-visible {
+    outline: none;
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2) var(--espaco-3);
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+  }
+
+  .card__rodape {
+    margin-top: auto;
+  }
+
+  .etiqueta {
+    display: inline-block;
+    padding: 0.125rem var(--espaco-2);
+    border-radius: var(--raio-sm);
+    background: var(--cor-marca-suave);
+    color: var(--cor-marca-forte);
+    font-family: var(--fonte-titulo);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .etiqueta--destaque {
+    background: var(--cor-marca);
+    color: var(--cor-sobre-marca);
+  }
+
+  .etiqueta--neutra {
+    background: var(--cal-escura);
+    color: var(--tinta-suave);
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "id": "configuracoes",
+  "label": "Configurações do site",
+  "repeatable": false,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Clube": {
+      "nome": {
+        "type": "Text",
+        "config": {
+          "label": "Nome do clube"
+        }
+      },
+      "slogan": {
+        "type": "Text",
+        "config": {
+          "label": "Slogan"
+        }
+      },
+      "descricao": {
+        "type": "Text",
+        "config": {
+          "label": "Descrição curta (SEO)"
+        }
+      },
+      "fundacao": {
+        "type": "Number",
+        "config": {
+          "label": "Ano de fundação"
+        }
+      },
+      "cidade": {
+        "type": "Text",
+        "config": {
+          "label": "Cidade"
+        }
+      },
+      "endereco": {
+        "type": "Text",
+        "config": {
+          "label": "Endereço"
+        }
+      },
+      "imagem_compartilhamento": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem padrão de compartilhamento (1200×630)",
+          "constraint": {},
+          "thumbnails": []
+        }
+      }
+    },
+    "Contato": {
+      "whatsapp": {
+        "type": "Text",
+        "config": {
+          "label": "WhatsApp",
+          "placeholder": "Ex.: 5511999999999"
+        }
+      },
+      "email": {
+        "type": "Text",
+        "config": {
+          "label": "E-mail"
+        }
+      },
+      "instagram": {
+        "type": "Link",
+        "config": {
+          "label": "Instagram",
+          "select": null,
+          "allowTargetBlank": true
+        }
+      },
+      "facebook": {
+        "type": "Link",
+        "config": {
+          "label": "Facebook",
+          "select": null,
+          "allowTargetBlank": true
+        }
+      },
+      "youtube": {
+        "type": "Link",
+        "config": {
+          "label": "YouTube",
+          "select": null,
+          "allowTargetBlank": true
+        }
+      }
+    },
+    "PIX": {
+      "pix_chave": {
+        "type": "Text",
+        "config": {
+          "label": "Chave PIX geral"
+        }
+      },
+      "pix_recebedor": {
+        "type": "Text",
+        "config": {
+          "label": "Nome do recebedor (até 25 caracteres)"
+        }
+      },
+      "pix_cidade": {
+        "type": "Text",
+        "config": {
+          "label": "Cidade do recebedor (até 15 caracteres)"
+        }
+      }
+    }
+  }
+}

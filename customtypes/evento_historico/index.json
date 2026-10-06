@@ -1,0 +1,49 @@
+{
+  "id": "evento_historico",
+  "label": "Evento Histórico",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "ano": {
+        "type": "Number",
+        "config": {
+          "label": "Ano"
+        }
+      },
+      "titulo": {
+        "type": "Text",
+        "config": {
+          "label": "Título"
+        }
+      },
+      "descricao": {
+        "type": "Text",
+        "config": {
+          "label": "Descrição"
+        }
+      },
+      "imagem": {
+        "type": "Image",
+        "config": {
+          "label": "Imagem",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "tipo": {
+        "type": "Select",
+        "config": {
+          "label": "Tipo",
+          "options": [
+            "Marco",
+            "Conquista",
+            "Fundação"
+          ],
+          "default_value": "Marco"
+        }
+      }
+    }
+  }
+}

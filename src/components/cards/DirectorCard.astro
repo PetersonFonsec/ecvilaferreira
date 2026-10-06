@@ -1,0 +1,72 @@
+---
+import ResponsiveImage from '@/components/ui/ResponsiveImage.astro';
+import type { MembroDiretoria } from '@/lib/types';
+
+interface Props {
+  membro: MembroDiretoria;
+}
+const { membro } = Astro.props;
+const iniciais = membro.nome
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((parte) => parte[0])
+  .join('');
+---
+
+<article class="diretor">
+  {
+    membro.foto ? (
+      <ResponsiveImage imagem={membro.foto} proporcao={1} sizes="10rem" class="diretor__foto" />
+    ) : (
+      <div class="diretor__foto diretor__iniciais" aria-hidden="true">{iniciais}</div>
+    )
+  }
+  <h3 class="diretor__nome">{membro.nome}</h3>
+  <p class="diretor__cargo">{membro.cargo}</p>
+  {membro.mandato && <p class="texto-suave">Mandato {membro.mandato}</p>}
+  {membro.bio && <p class="diretor__bio">{membro.bio}</p>}
+</article>
+
+<style>
+  .diretor {
+    display: grid;
+    justify-items: center;
+    gap: var(--espaco-1);
+    text-align: center;
+  }
+
+  .diretor :global(.diretor__foto) {
+    width: 9rem;
+    aspect-ratio: 1;
+    margin-bottom: var(--espaco-3);
+    border-radius: 50%;
+    border: 4px solid var(--branco);
+    box-shadow: 0 0 0 2px var(--cor-marca);
+    object-fit: cover;
+  }
+
+  .diretor__iniciais {
+    display: grid;
+    place-items: center;
+    background: var(--cor-marca);
+    color: var(--cor-sobre-marca);
+    font-family: var(--fonte-titulo);
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .diretor__nome {
+    font-size: 1.5rem;
+  }
+
+  .diretor__cargo {
+    font-weight: 700;
+    color: var(--cor-destaque);
+  }
+
+  .diretor__bio {
+    max-width: 24rem;
+    font-size: var(--texto-sm);
+  }
+</style>

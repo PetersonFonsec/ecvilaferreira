@@ -1,0 +1,92 @@
+---
+/** Link com aparência de botão. Para ações dentro de formulários, use <button> com as mesmas classes. */
+interface Props {
+  href: string;
+  variante?: 'primario' | 'secundario' | 'claro' | 'contorno' | 'whatsapp';
+  externo?: boolean;
+  class?: string;
+}
+
+const { href, variante = 'primario', externo = false, class: classe } = Astro.props;
+---
+
+<a
+  class:list={['botao', `botao--${variante}`, classe]}
+  href={href}
+  target={externo ? '_blank' : undefined}
+  rel={externo ? 'noopener' : undefined}
+>
+  <slot />
+  {externo && <span class="visualmente-oculto"> (abre em nova aba)</span>}
+</a>
+
+<style>
+  .botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-2);
+    min-height: 3rem;
+    padding: var(--espaco-2) var(--espaco-5);
+    border: 2px solid transparent;
+    border-radius: var(--raio-sm);
+    font-family: var(--fonte-titulo);
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color var(--transicao), color var(--transicao), transform var(--transicao);
+  }
+
+  .botao:hover {
+    transform: translateY(-1px);
+  }
+
+  .botao--primario {
+    background: var(--cor-marca);
+    color: var(--cor-sobre-marca);
+  }
+
+  .botao--primario:hover {
+    background: var(--cor-marca-forte);
+  }
+
+  .botao--secundario {
+    border-color: currentColor;
+    color: var(--cor-marca);
+  }
+
+  .botao--secundario:hover {
+    background: var(--cor-marca-suave);
+  }
+
+  .botao--claro {
+    background: var(--branco);
+    color: var(--cor-marca-forte);
+  }
+
+  .botao--claro:hover {
+    background: var(--verde-100);
+  }
+
+  /* Contorno branco, para fundos verdes. */
+  .botao--contorno {
+    border-color: var(--branco);
+    color: var(--branco);
+  }
+
+  .botao--contorno:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  /* Verde do WhatsApp escurecido para manter contraste AA com texto branco. */
+  .botao--whatsapp {
+    background: #128c4a;
+    color: var(--branco);
+  }
+
+  .botao--whatsapp:hover {
+    background: #0e6e3a;
+  }
+</style>

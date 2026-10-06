@@ -1,0 +1,81 @@
+---
+import type { ItemMenu } from '@/data/navegacao';
+
+interface Props {
+  itens: ItemMenu[];
+  destaque?: ItemMenu;
+  id?: string;
+}
+
+const { itens, destaque, id } = Astro.props;
+const atual = Astro.url.pathname.replace(/\/$/, '') || '/';
+const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
+---
+
+<nav id={id} class="nav" aria-label="Principal">
+  <ul class="nav__lista" role="list">
+    {
+      itens.map((item) => (
+        <li>
+          <a class="nav__link" href={item.href} aria-current={ativo(item.href) ? 'page' : undefined}>
+            {item.rotulo}
+          </a>
+        </li>
+      ))
+    }
+    {
+      destaque && (
+        <li>
+          <a class="nav__destaque" href={destaque.href} aria-current={ativo(destaque.href) ? 'page' : undefined}>
+            {destaque.rotulo}
+          </a>
+        </li>
+      )
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav__lista {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-1) var(--espaco-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__link,
+  .nav__destaque {
+    display: inline-block;
+    padding: var(--espaco-2) var(--espaco-3);
+    font-family: var(--fonte-titulo);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border-radius: var(--raio-sm);
+  }
+
+  .nav__link {
+    color: var(--cor-sobre-marca);
+  }
+
+  .nav__link:hover,
+  .nav__link[aria-current='page'] {
+    background: rgb(255 255 255 / 0.12);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .nav__destaque {
+    background: var(--branco);
+    color: var(--cor-marca-forte);
+  }
+
+  .nav__destaque:hover {
+    background: var(--verde-100);
+  }
+</style>

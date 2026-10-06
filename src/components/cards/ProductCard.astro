@@ -1,0 +1,35 @@
+---
+import Midia from '@/components/ui/Midia.astro';
+import { formatarMoeda } from '@/lib/format';
+import type { Produto } from '@/lib/types';
+
+interface Props {
+  produto: Produto;
+  nivelTitulo?: 'h2' | 'h3';
+}
+const { produto, nivelTitulo: Titulo = 'h3' } = Astro.props;
+---
+
+<article class="card">
+  <Midia imagem={produto.imagens[0]} proporcao={1} />
+  <div class="card__corpo">
+    <p class="card__meta">
+      <span class="etiqueta">{produto.categoria}</span>
+      {!produto.disponivel && <span class="etiqueta etiqueta--neutra">Esgotado</span>}
+    </p>
+    <Titulo class="card__titulo">
+      <a class="card__link" href={`/loja/${produto.slug}`}>{produto.nome}</a>
+    </Titulo>
+    <p>{produto.resumo}</p>
+    {produto.preco !== undefined && <p class="card__rodape preco">{formatarMoeda(produto.preco)}</p>}
+  </div>
+</article>
+
+<style>
+  .preco {
+    font-family: var(--fonte-titulo);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-marca);
+  }
+</style>

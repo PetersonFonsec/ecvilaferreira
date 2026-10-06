@@ -1,0 +1,76 @@
+---
+import { formatarMoeda, percentual } from '@/lib/format';
+
+/** Progresso de arrecadação. Usa <progress>, que já é acessível e não precisa de JS. */
+interface Props {
+  arrecadado: number;
+  meta: number;
+  compacto?: boolean;
+}
+
+const { arrecadado, meta, compacto = false } = Astro.props;
+const pct = percentual(arrecadado, meta);
+---
+
+<div class:list={['progresso', { 'progresso--compacto': compacto }]}>
+  <p class="progresso__valores">
+    <strong class="progresso__arrecadado">{formatarMoeda(arrecadado)}</strong>
+    <span>de {formatarMoeda(meta)}</span>
+  </p>
+  <progress class="progresso__barra" max="100" value={pct} aria-label={`${pct}% da meta arrecadada`}>{pct}%</progress>
+  <p class="progresso__pct">{pct}% da meta</p>
+</div>
+
+<style>
+  .progresso {
+    display: grid;
+    gap: var(--espaco-2);
+  }
+
+  .progresso__valores {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--espaco-2);
+    color: var(--cor-texto-suave);
+  }
+
+  .progresso__arrecadado {
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-sm);
+    color: var(--cor-marca);
+  }
+
+  .progresso--compacto .progresso__arrecadado {
+    font-size: 1.25rem;
+  }
+
+  .progresso__barra {
+    appearance: none;
+    width: 100%;
+    height: 0.875rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--cor-marca-suave);
+    overflow: hidden;
+  }
+
+  .progresso__barra::-webkit-progress-bar {
+    background: var(--cor-marca-suave);
+  }
+
+  .progresso__barra::-webkit-progress-value {
+    background: var(--cor-marca);
+    border-radius: 999px;
+  }
+
+  .progresso__barra::-moz-progress-bar {
+    background: var(--cor-marca);
+    border-radius: 999px;
+  }
+
+  .progresso__pct {
+    font-size: var(--texto-sm);
+    font-weight: 600;
+  }
+</style>

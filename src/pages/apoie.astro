@@ -1,0 +1,80 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Section from '@/components/ui/Section.astro';
+import Pix from '@/components/ui/Pix.astro';
+import CampaignCard from '@/components/cards/CampaignCard.astro';
+import { getCampanhas, getConfiguracoes } from '@/lib/content';
+
+const [config, campanhas] = await Promise.all([getConfiguracoes(), getCampanhas()]);
+const ativas = campanhas.filter((c) => c.status === 'Ativa');
+
+const formas = [
+  { titulo: 'Doe via PIX', texto: 'Qualquer valor ajuda a manter o clube e seus projetos.', href: '#pix' },
+  { titulo: 'Ajude uma campanha', texto: 'Escolha uma meta e acompanhe o resultado.', href: '/campanhas' },
+  { titulo: 'Patrocine', texto: 'Leve sua empresa para perto do bairro.', href: '/patrocinadores' },
+  { titulo: 'Compre na loja', texto: 'Vista as cores do clube e ajude a mantê-lo.', href: '/loja' },
+];
+---
+
+<BaseLayout titulo="Apoie o Vila Ferreira" descricao="Doe via PIX, ajude uma campanha, patrocine ou compre na loja oficial do Vila Ferreira.">
+  <Hero chapeu="Apoie" titulo="O clube é do bairro. E o bairro é quem sustenta o clube." texto="Veja as formas de ajudar. Tudo o que entra é registrado na página de transparência." />
+
+  <Section titulo="Formas de apoiar" id="formas">
+    <ul class="grade grade--estreita formas" role="list">
+      {
+        formas.map((forma) => (
+          <li class="forma">
+            <h3><a href={forma.href}>{forma.titulo}</a></h3>
+            <p>{forma.texto}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section tom="claro" titulo="Doe via PIX" subtitulo="Doação livre para o clube. Para apoiar uma campanha específica, use o PIX na página dela." id="pix">
+    <Pix chave={config.pix.chave} recebedor={config.pix.recebedor} cidade={config.pix.cidade} descricao="Apoio ao Vila Ferreira" />
+  </Section>
+
+  {
+    ativas.length > 0 && (
+      <Section titulo="Campanhas em andamento" id="campanhas">
+        <ul class="grade" role="list">
+          {ativas.map((campanha) => (
+            <li>
+              <CampaignCard campanha={campanha} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .forma {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-2);
+    padding: var(--espaco-5);
+    background: var(--cor-superficie);
+    border-top: 6px solid var(--cor-marca);
+    border-radius: var(--raio-sm);
+  }
+
+  .forma:has(a:hover) {
+    box-shadow: var(--sombra);
+  }
+
+  .forma a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .forma a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+</style>

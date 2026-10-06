@@ -1,0 +1,85 @@
+{
+  "id": "produto",
+  "label": "Produto",
+  "repeatable": true,
+  "status": true,
+  "format": "custom",
+  "json": {
+    "Principal": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "Slug (URL)"
+        }
+      },
+      "nome": {
+        "type": "Text",
+        "config": {
+          "label": "Nome"
+        }
+      },
+      "resumo": {
+        "type": "Text",
+        "config": {
+          "label": "Resumo"
+        }
+      },
+      "descricao": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Descrição",
+          "multi": "paragraph,strong,em,hyperlink,heading2,heading3,list-item,o-list-item,image,embed",
+          "allowTargetBlank": true
+        }
+      },
+      "preco": {
+        "type": "Number",
+        "config": {
+          "label": "Preço (R$)"
+        }
+      },
+      "imagens": {
+        "type": "Group",
+        "config": {
+          "label": "Imagens",
+          "fields": {
+            "imagem": {
+              "type": "Image",
+              "config": {
+                "label": "Imagem",
+                "constraint": {},
+                "thumbnails": []
+              }
+            },
+            "legenda": {
+              "type": "Text",
+              "config": {
+                "label": "Legenda"
+              }
+            }
+          }
+        }
+      },
+      "tamanhos": {
+        "type": "Text",
+        "config": {
+          "label": "Tamanhos",
+          "placeholder": "Ex.: P, M, G, GG"
+        }
+      },
+      "categoria": {
+        "type": "Text",
+        "config": {
+          "label": "Categoria"
+        }
+      },
+      "disponivel": {
+        "type": "Boolean",
+        "config": {
+          "label": "Disponível",
+          "default_value": true
+        }
+      }
+    }
+  }
+}
