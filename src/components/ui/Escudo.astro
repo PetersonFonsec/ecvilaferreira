@@ -1,21 +1,22 @@
 ---
-/** Escudo provisório. Substitua pelo SVG oficial do clube quando estiver disponível. */
+import { svgBrasao } from '@/lib/brasao';
+
+/**
+ * Brasão oficial do Esporte Clube Vila Ferreira (o desenho fica em src/lib/brasao.ts).
+ * `simples` remove os textos (para tamanhos pequenos, onde as letras não seriam legíveis).
+ * `estrelas={false}` esconde as duas estrelas douradas de cima.
+ */
 interface Props {
   tamanho?: number;
   class?: string;
+  simples?: boolean;
+  estrelas?: boolean;
+  /** Texto alternativo. Sem ele, o brasão é tratado como decorativo. */
+  rotulo?: string;
 }
-const { tamanho = 40, class: classe } = Astro.props;
+
+const { tamanho = 40, class: classe, simples = false, estrelas = true, rotulo } = Astro.props;
+const svg = svgBrasao({ tamanho, classe: ['escudo', classe].filter(Boolean).join(' '), simples, estrelas, rotulo });
 ---
 
-<svg
-  class={classe}
-  width={tamanho}
-  height={tamanho * 1.15}
-  viewBox="0 0 40 46"
-  aria-hidden="true"
-  focusable="false"
->
-  <path d="M20 1 38 7v15c0 11-7.6 19.6-18 23C9.6 41.6 2 33 2 22V7Z" fill="#0f5c32" stroke="#fff" stroke-width="2" />
-  <path d="M2 18h36v8H2z" fill="#fff" />
-  <text x="20" y="25" text-anchor="middle" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="9" fill="#0f5c32">VF</text>
-</svg>
+<Fragment set:html={svg} />

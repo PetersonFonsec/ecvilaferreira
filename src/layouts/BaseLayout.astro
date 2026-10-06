@@ -1,6 +1,7 @@
 ---
 import '@fontsource/barlow-condensed/600.css';
 import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/barlow-condensed/800.css';
 import '@/styles/global.css';
 
 import SEO from '@/components/layout/SEO.astro';
@@ -8,6 +9,7 @@ import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import { getConfiguracoes } from '@/lib/content';
 import { imagemCompartilhamento } from '@/lib/imagem';
+import { imagemDaSecao } from '@/data/compartilhamento';
 import type { ComponentProps } from 'astro/types';
 
 type PropsSEO = ComponentProps<typeof SEO>;
@@ -18,7 +20,8 @@ interface Props extends Omit<PropsSEO, 'nomeSite' | 'descricao'> {
 
 const config = await getConfiguracoes();
 const { descricao = config.descricao, imagem, ...seo } = Astro.props;
-const imagemPadrao = config.ogImage ? imagemCompartilhamento(config.ogImage) : undefined;
+const imagemPadrao =
+  imagemDaSecao(Astro.url.pathname) ?? (config.ogImage ? imagemCompartilhamento(config.ogImage) : undefined);
 ---
 
 <!doctype html>
@@ -26,20 +29,36 @@ const imagemPadrao = config.ogImage ? imagemCompartilhamento(config.ogImage) : u
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0a3d22" />
+    <meta name="theme-color" content="#052a13" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script is:inline>
+      // Liga os estados iniciais das animações. Se os efeitos não carregarem em 4 s, mostra tudo.
+      document.documentElement.classList.add('js');
+      setTimeout(function () {
+        if (!document.documentElement.classList.contains('efeitos-ok')) document.documentElement.classList.add('revelar-tudo');
+      }, 4000);
+    </script>
     <link rel="sitemap" href="/sitemap-index.xml" />
     <SEO {...seo} descricao={descricao} imagem={imagem ?? imagemPadrao} nomeSite={config.nome} />
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <div class="progresso-leitura" aria-hidden="true"></div>
     <Header nome={config.nome} />
     <main id="conteudo" tabindex="-1">
       <slot />
     </main>
     <Footer config={config} />
+    <div class="grao" aria-hidden="true"></div>
   </body>
 </html>
+
+<script>
+  import '@/scripts/efeitos';
+</script>
 
 <style>
   .pular {

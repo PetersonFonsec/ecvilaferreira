@@ -12,13 +12,13 @@ interface Props {
 const { titulo, texto, acao, acaoSecundaria } = Astro.props;
 ---
 
-<aside class="cta">
+<aside class="cta" data-revelar="zoom">
   <div class="cta__texto">
     <h2 class="cta__titulo">{titulo}</h2>
     {texto && <p>{texto}</p>}
   </div>
   <div class="cta__acoes">
-    <Botao href={acao.href} variante="claro" externo={acao.externo}>{acao.rotulo}</Botao>
+    <Botao href={acao.href} variante="ouro" externo={acao.externo}>{acao.rotulo}</Botao>
     {
       acaoSecundaria && (
         <a class="cta__link" href={acaoSecundaria.href} target={acaoSecundaria.externo ? '_blank' : undefined} rel={acaoSecundaria.externo ? 'noopener' : undefined}>
@@ -40,7 +40,8 @@ const { titulo, texto, acao, acaoSecundaria } = Astro.props;
     background: var(--cor-marca-forte);
     color: var(--cor-sobre-marca);
     border-radius: var(--raio-lg);
-    border-left: 8px solid var(--cor-destaque);
+    border-left: 8px solid var(--ouro-500);
+    background-image: radial-gradient(ellipse 60% 90% at 100% 50%, rgb(17 128 51 / 0.55), transparent 70%);
   }
 
   .cta__texto {
@@ -51,6 +52,7 @@ const { titulo, texto, acao, acaoSecundaria } = Astro.props;
 
   .cta__titulo {
     font-size: var(--titulo-md);
+    font-weight: 800;
   }
 
   .cta__acoes {

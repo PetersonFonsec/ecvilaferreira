@@ -1,0 +1,63 @@
+---
+import { ilustracoes, type NomeIlustracao } from '@/data/ilustracoes';
+
+/**
+ * Ilustração em traço. As linhas usam a cor do texto (currentColor) e os detalhes ficam em dourado.
+ * Ao entrar na tela, os traços se desenham (ver efeitos.css). É sempre decorativa.
+ */
+interface Props {
+  nome: NomeIlustracao;
+  class?: string;
+  /** Espessura do traço em unidades do desenho. */
+  espessura?: number;
+  /** Atraso extra da animação, em ms. */
+  atraso?: number;
+  [atributo: `data-${string}`]: string | undefined;
+}
+
+const { nome, class: classe, espessura = 3, atraso = 0, ...dados } = Astro.props;
+const desenho = ilustracoes[nome] as {
+  viewBox: string;
+  tracos: string[];
+  destaques?: string[];
+  preenchimentos?: { d: string; cor?: 'ouro' | 'traco' }[];
+};
+const tracos = desenho.tracos.length;
+---
+
+<svg
+  class:list={['ilustracao', `ilustracao--${nome}`, classe]}
+  viewBox={desenho.viewBox}
+  aria-hidden="true"
+  focusable="false"
+  fill="none"
+  stroke-width={espessura}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  style={atraso ? `--atraso: ${atraso}ms` : undefined}
+  {...dados}
+>
+  {
+    desenho.preenchimentos?.map((p, i) => (
+      <path
+        class="preenche"
+        d={p.d}
+        fill={p.cor === 'traco' ? 'currentColor' : 'var(--ilustracao-destaque, var(--ouro-500))'}
+        stroke="none"
+        style={`--t: ${tracos + i}`}
+      />
+    ))
+  }
+  {desenho.tracos.map((d, i) => <path class="traco" d={d} pathLength="1" stroke="currentColor" style={`--t: ${i}`} />)}
+  {
+    desenho.destaques?.map((d, i) => (
+      <path
+        class="traco"
+        d={d}
+        pathLength="1"
+        stroke="var(--ilustracao-destaque, var(--ouro-500))"
+        style={`--t: ${tracos + i}`}
+      />
+    ))
+  }
+</svg>

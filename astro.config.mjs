@@ -17,4 +17,8 @@ export default defineConfig({
     format: 'directory',
   },
   integrations: [sitemap()],
+  vite: {
+    // O three.js (brasão 3D) fica num pedaço separado, baixado só na home e depois do carregamento.
+    build: { chunkSizeWarningLimit: 700 },
+  },
 });

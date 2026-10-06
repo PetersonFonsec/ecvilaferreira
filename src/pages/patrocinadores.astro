@@ -17,12 +17,12 @@ const vantagens = [
 ---
 
 <BaseLayout titulo="Patrocinadores" descricao="Empresas que apoiam o Vila Ferreira e como sua empresa pode se tornar patrocinadora.">
-  <Hero chapeu="Apoie" titulo="Patrocinadores" texto="Empresas que acreditam no futebol de várzea e na força do bairro." />
+  <Hero ilustracao="chuteira" chapeu="Apoie" titulo="Patrocinadores" texto="Empresas que acreditam no futebol de várzea e na força do bairro." />
 
   <Section titulo="Quem apoia o Vila Ferreira" id="atuais">
     {
       patrocinadores.length > 0 ? (
-        <ul class="grade grade--estreita" role="list">
+        <ul class="grade grade--estreita" role="list" data-revelar="grupo">
           {patrocinadores.map((patrocinador) => (
             <li>
               <SponsorCard patrocinador={patrocinador} />
@@ -36,7 +36,7 @@ const vantagens = [
   </Section>
 
   <Section tom="claro" chapeu="Seja um patrocinador" titulo="Por que patrocinar" id="seja-patrocinador">
-    <ul class="grade" role="list">
+    <ul class="grade" role="list" data-revelar="grupo">
       {
         vantagens.map((v) => (
           <li class="vantagem">

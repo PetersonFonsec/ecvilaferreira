@@ -1,8 +1,11 @@
 ---
-/** Link com aparência de botão. Para ações dentro de formulários, use <button> com as mesmas classes. */
+/**
+ * Link com aparência de botão. É "magnético" (vem atrás do cursor) e, ao passar o mouse,
+ * uma onda de cor sobe por dentro dele. Para ações dentro de formulários, use <button> com as mesmas classes.
+ */
 interface Props {
   href: string;
-  variante?: 'primario' | 'secundario' | 'claro' | 'contorno' | 'whatsapp';
+  variante?: 'primario' | 'secundario' | 'claro' | 'contorno' | 'ouro' | 'whatsapp';
   externo?: boolean;
   class?: string;
 }
@@ -15,78 +18,112 @@ const { href, variante = 'primario', externo = false, class: classe } = Astro.pr
   href={href}
   target={externo ? '_blank' : undefined}
   rel={externo ? 'noopener' : undefined}
+  data-magnetico="0.25"
 >
-  <slot />
+  <span class="botao__texto"><slot /></span>
+  <svg class="botao__seta" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
   {externo && <span class="visualmente-oculto"> (abre em nova aba)</span>}
 </a>
 
 <style>
   .botao {
+    --fundo: var(--cor-marca);
+    --texto: var(--cor-sobre-marca);
+    --onda: var(--verde-900);
+    --texto-onda: var(--branco);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--espaco-2);
-    min-height: 3rem;
-    padding: var(--espaco-2) var(--espaco-5);
+    gap: var(--espaco-3);
+    min-height: 3.25rem;
+    padding: var(--espaco-2) var(--espaco-5) var(--espaco-2) var(--espaco-6);
     border: 2px solid transparent;
-    border-radius: var(--raio-sm);
+    border-radius: 999px;
+    background: var(--fundo);
+    color: var(--texto);
     font-family: var(--fonte-titulo);
     font-size: 1.125rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
-    transition: background-color var(--transicao), color var(--transicao), transform var(--transicao);
+    transition: color 450ms var(--curva-saida);
+  }
+
+  /* A onda: um círculo que cresce de baixo ao passar o mouse. */
+  .botao::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: 100%;
+    width: 150%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--onda);
+    translate: -50% 0;
+    transition: translate 650ms var(--curva-saida);
   }
 
   .botao:hover {
-    transform: translateY(-1px);
+    color: var(--texto-onda);
+  }
+
+  .botao:hover::before {
+    translate: -50% -70%;
+  }
+
+  .botao__seta {
+    flex: none;
+    transition: translate 450ms var(--curva-saida);
+  }
+
+  .botao:hover .botao__seta {
+    translate: 0.25rem 0;
   }
 
   .botao--primario {
-    background: var(--cor-marca);
-    color: var(--cor-sobre-marca);
-  }
-
-  .botao--primario:hover {
-    background: var(--cor-marca-forte);
+    --onda: var(--verde-950);
   }
 
   .botao--secundario {
+    --fundo: transparent;
+    --texto: var(--cor-marca);
+    --onda: var(--cor-marca);
     border-color: currentColor;
-    color: var(--cor-marca);
-  }
-
-  .botao--secundario:hover {
-    background: var(--cor-marca-suave);
   }
 
   .botao--claro {
-    background: var(--branco);
-    color: var(--cor-marca-forte);
+    --fundo: var(--branco);
+    --texto: var(--verde-900);
+    --onda: var(--ouro-500);
+    --texto-onda: var(--verde-950);
   }
 
-  .botao--claro:hover {
-    background: var(--verde-100);
+  .botao--ouro {
+    --fundo: var(--ouro-500);
+    --texto: var(--verde-950);
+    --onda: var(--branco);
+    --texto-onda: var(--verde-950);
   }
 
   /* Contorno branco, para fundos verdes. */
   .botao--contorno {
-    border-color: var(--branco);
-    color: var(--branco);
-  }
-
-  .botao--contorno:hover {
-    background: rgb(255 255 255 / 0.12);
+    --fundo: transparent;
+    --texto: var(--branco);
+    --onda: var(--branco);
+    --texto-onda: var(--verde-900);
+    border-color: rgb(255 255 255 / 0.7);
   }
 
   /* Verde do WhatsApp escurecido para manter contraste AA com texto branco. */
   .botao--whatsapp {
-    background: #128c4a;
-    color: var(--branco);
-  }
-
-  .botao--whatsapp:hover {
-    background: #0e6e3a;
+    --fundo: #128c4a;
+    --onda: #0b5e31;
   }
 </style>
