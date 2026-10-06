@@ -34,6 +34,9 @@ const imagemPadrao =
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Vila Ferreira" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <script is:inline>
       // Liga os estados iniciais das animações. Se os efeitos não carregarem em 4 s, mostra tudo.
       document.documentElement.classList.add('js');
@@ -58,6 +61,7 @@ const imagemPadrao =
 
 <script>
   import '@/scripts/efeitos';
+  import '@/scripts/app';
 </script>
 
 <style>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/ui/Hero.astro';
+import Botao from '@/components/ui/Botao.astro';
+---
+
+<BaseLayout titulo="Sem conexão" descricao="Você está sem internet no momento." semIndexar>
+  <Hero
+    ilustracao="campo"
+    chapeu="Intervalo"
+    titulo="Sem conexão"
+    texto="Parece que a internet caiu. As páginas que você já abriu continuam disponíveis; o resto volta assim que a conexão voltar."
+  >
+    <Botao href="/" variante="claro">Ir para o início</Botao>
+  </Hero>
+</BaseLayout>
