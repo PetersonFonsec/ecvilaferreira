@@ -15,6 +15,7 @@ import {
   iniciarLetreiros,
   iniciarMagnetico,
   iniciarParallax,
+  iniciarPrevia,
   iniciarSeguirCursor,
 } from './interacoes';
 
@@ -39,6 +40,7 @@ if (animar) {
     iniciarMagnetico();
     iniciarInclinar();
     iniciarSeguirCursor();
+    iniciarPrevia();
   }
 }
 

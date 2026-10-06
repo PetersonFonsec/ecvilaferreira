@@ -1,0 +1,326 @@
+---
+import Ilustracao from '@/components/ui/Ilustracao.astro';
+import Midia from '@/components/ui/Midia.astro';
+import type { ProjetoSocial } from '@/lib/types';
+
+/**
+ * Projetos da página inicial: apresentação fixa à esquerda e, à direita, uma lista de linhas grandes.
+ * No computador, ao passar o mouse numa linha, a foto do projeto aparece e segue o cursor ([data-previa]).
+ */
+interface Props {
+  projetos: ProjetoSocial[];
+}
+const { projetos } = Astro.props;
+---
+
+<section class="projetos" id="projetos" aria-labelledby="projetos-titulo">
+  <div class="container projetos__grade">
+    <div class="projetos__intro">
+      <p class="projetos__chapeu" data-revelar>Comunidade</p>
+      <h2 id="projetos-titulo" data-dividir>Projetos sociais</h2>
+      <p class="projetos__texto" data-revelar style="--atraso: 150ms">
+        O Vila Ferreira joga dentro e fora de campo: escolinha, festas, arrecadações e mutirões que fazem do clube um
+        ponto de encontro do bairro.
+      </p>
+      <div class="projetos__arte" data-seguir="-30" aria-hidden="true">
+        <Ilustracao nome="bairro" espessura={2.2} />
+      </div>
+      <p class="projetos__todos" data-revelar>
+        <a class="ver-mais" href="/projetos">Conheça todos os projetos</a>
+      </p>
+    </div>
+
+    <ol class="lista" role="list" data-revelar="grupo">
+      {
+        projetos.map((projeto, i) => (
+          <li class="linha" data-previa>
+            <span class="linha__numero" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class="linha__texto">
+              <h3 class="linha__titulo">
+                <a class="linha__link" href={`/projetos/${projeto.slug}`} data-cursor="Ver">
+                  {projeto.titulo}
+                </a>
+              </h3>
+              <p class="linha__resumo">{projeto.resumo}</p>
+            </div>
+            <span class="linha__status">{projeto.status}</span>
+            <span class="linha__seta" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+                <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <div class="linha__previa card" data-previa-foto aria-hidden="true">
+              <Midia imagem={projeto.imagem} proporcao={4 / 3} sizes="20rem" />
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .projetos {
+    position: relative;
+    padding-block: var(--espaco-secao);
+    overflow: clip;
+  }
+
+  .projetos__grade {
+    display: grid;
+    gap: var(--espaco-7);
+  }
+
+  @media (min-width: 60rem) {
+    .projetos__grade {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      align-items: start;
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+
+    .projetos__intro {
+      position: sticky;
+      top: 7rem;
+    }
+  }
+
+  .projetos__intro {
+    display: grid;
+    gap: var(--espaco-4);
+    justify-items: start;
+  }
+
+  .projetos__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cor-destaque);
+  }
+
+  .projetos h2 {
+    font-size: var(--titulo-xl);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--verde-900);
+  }
+
+  .projetos__texto {
+    max-width: 34ch;
+    font-size: var(--texto-lg);
+    color: var(--cor-texto-suave);
+  }
+
+  .projetos__arte {
+    width: min(100%, 20rem);
+    color: var(--verde-700);
+  }
+
+  .projetos__arte :global(.ilustracao) {
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 59.9375rem) {
+    .projetos__arte {
+      width: 12rem;
+      justify-self: end;
+      margin-top: calc(-1 * var(--espaco-4));
+    }
+  }
+
+  /* ---------- Lista de projetos ---------- */
+  .lista {
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--verde-900);
+  }
+
+  .linha {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'numero texto seta'
+      'numero status seta';
+    align-items: center;
+    gap: var(--espaco-2) var(--espaco-4);
+    padding: var(--espaco-6) var(--espaco-2);
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  @media (min-width: 40rem) {
+    .linha {
+      grid-template-columns: 4.5rem minmax(0, 1fr) auto 3.5rem;
+      grid-template-areas: 'numero texto status seta';
+      gap: var(--espaco-5);
+      padding: var(--espaco-7) var(--espaco-4);
+    }
+  }
+
+  /* Fundo verde que sobe por trás da linha no hover */
+  .linha::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--verde-900);
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 600ms var(--curva-saida);
+  }
+
+  .linha:hover::before,
+  .linha:focus-within::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .linha__numero {
+    grid-area: numero;
+    align-self: start;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--ouro-600);
+    transition: color 400ms ease;
+  }
+
+  .linha:hover .linha__numero,
+  .linha:focus-within .linha__numero {
+    color: var(--ouro-500);
+  }
+
+  .linha__texto {
+    grid-area: texto;
+    display: grid;
+    gap: var(--espaco-2);
+  }
+
+  .linha__titulo {
+    font-size: var(--titulo-md);
+    font-weight: 800;
+    line-height: 0.95;
+  }
+
+  .linha__link {
+    color: var(--verde-900);
+    text-decoration: none;
+    transition: color 400ms ease;
+  }
+
+  .linha__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .linha__link:focus-visible {
+    outline: none;
+  }
+
+  .linha:has(.linha__link:focus-visible) {
+    outline: 3px solid var(--cor-foco);
+    outline-offset: 2px;
+  }
+
+  .linha__resumo {
+    max-width: 44ch;
+    color: var(--cor-texto-suave);
+    transition: color 400ms ease;
+  }
+
+  .linha__status {
+    grid-area: status;
+    justify-self: start;
+    padding: 0.125rem var(--espaco-3);
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-family: var(--fonte-titulo);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--verde-700);
+    transition: color 400ms ease;
+  }
+
+  .linha__seta {
+    grid-area: seta;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid var(--verde-900);
+    color: var(--verde-900);
+    transition:
+      background-color 400ms ease,
+      border-color 400ms ease,
+      color 400ms ease,
+      rotate 600ms var(--curva-saida);
+    rotate: -45deg;
+  }
+
+  .linha:hover :is(.linha__link, .linha__resumo),
+  .linha:focus-within :is(.linha__link, .linha__resumo) {
+    color: var(--branco);
+  }
+
+  .linha:hover .linha__status,
+  .linha:focus-within .linha__status {
+    color: var(--ouro-400);
+  }
+
+  .linha:hover .linha__seta,
+  .linha:focus-within .linha__seta {
+    rotate: 0deg;
+    background: var(--ouro-500);
+    border-color: var(--ouro-500);
+    color: var(--verde-950);
+  }
+
+  /* ---------- Foto que aparece no hover (só com mouse em tela larga) ---------- */
+  .linha__previa {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 60rem) {
+    .linha__previa {
+      position: absolute;
+      top: 50%;
+      left: 72%;
+      z-index: 2;
+      display: block;
+      width: 17rem;
+      height: auto;
+      border: 3px solid var(--ouro-500);
+      pointer-events: none;
+      box-shadow: var(--sombra-forte);
+      opacity: 0;
+      scale: 0.6;
+      rotate: var(--giro, -4deg);
+      translate: calc(var(--px, 0px) - 50%) calc(var(--py, 0px) - 50%);
+      transition:
+        opacity 300ms ease,
+        scale 500ms var(--curva-saida),
+        rotate 500ms var(--curva-saida);
+    }
+
+    /* Com JS a foto acompanha o cursor (posição em px a partir do canto da linha). */
+    .linha:global(.previa--js) .linha__previa {
+      top: 0;
+      left: 0;
+    }
+
+    .linha:hover .linha__previa {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+</style>

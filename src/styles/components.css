@@ -95,4 +95,26 @@
     background: var(--cal-escura);
     color: var(--tinta-suave);
   }
+
+  /* Link "ver todos" sublinhado em dourado, usado no fim das seções. */
+  .ver-mais {
+    font-family: var(--fonte-titulo);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cor-link);
+    text-decoration: none;
+    background: linear-gradient(var(--ouro-500), var(--ouro-500)) 0 100% / 100% 2px no-repeat;
+    transition: background-size 500ms var(--curva-saida);
+  }
+
+  .ver-mais::after {
+    content: ' →';
+  }
+
+  .ver-mais:hover {
+    background-size: 0% 2px;
+    background-position: 100% 100%;
+  }
 }

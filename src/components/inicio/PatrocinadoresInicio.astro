@@ -1,0 +1,327 @@
+---
+import Botao from '@/components/ui/Botao.astro';
+import Ilustracao from '@/components/ui/Ilustracao.astro';
+import { urlImagem } from '@/lib/imagem';
+import type { Patrocinador } from '@/lib/types';
+
+/**
+ * Patrocinadores na página inicial: um letreiro com as marcas que corre com a rolagem
+ * e, abaixo, o convite para novas empresas. Com poucas marcas, o letreiro repete a lista até encher a tela.
+ */
+interface Props {
+  patrocinadores: Patrocinador[];
+}
+const { patrocinadores } = Astro.props;
+const ordem = { Master: 0, Ouro: 1, Prata: 2, Apoiador: 3 } as const;
+const marcas = [...patrocinadores].sort((a, b) => ordem[a.nivel] - ordem[b.nivel]);
+const repeticoes = Math.max(2, Math.ceil(8 / marcas.length));
+const bloco = Array.from({ length: repeticoes }, () => marcas).flat();
+
+const vantagens = [
+  { titulo: 'Sua marca em campo', texto: 'Na camisa, nas placas e nos eventos do clube.' },
+  { titulo: 'Vitrine no bairro', texto: 'Divulgação aqui no site e nas redes do Vila.' },
+  { titulo: 'Impacto de verdade', texto: 'Seu apoio mantém a escolinha e os projetos sociais.' },
+];
+---
+
+<section class="patrocinio" id="patrocinadores" aria-labelledby="patrocinadores-titulo">
+  <div class="container patrocinio__cabecalho">
+    <p class="patrocinio__chapeu" data-revelar>Patrocinadores</p>
+    <h2 id="patrocinadores-titulo" data-dividir>Quem caminha com a gente</h2>
+    <p class="patrocinio__intro" data-revelar style="--atraso: 200ms">
+      Empresas e comerciantes do bairro que acreditam no Vila Ferreira e ajudam a manter o time, o campo e os projetos
+      sociais.
+    </p>
+  </div>
+
+  <ul class="visualmente-oculto">
+    {
+      marcas.map((m) => (
+        <li>
+          {m.site ? (
+            <a href={m.site} rel="noopener sponsored">
+              {m.nome}
+            </a>
+          ) : (
+            m.nome
+          )}{' '}
+          ({m.nivel})
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="letreiro marcas" data-letreiro="0.7" aria-hidden="true">
+    <div class="letreiro__faixa">
+      {
+        [0, 1].map(() => (
+          <span class="marcas__bloco">
+            {bloco.map((m) => (
+              <span class:list={['marca', `marca--${m.nivel.toLowerCase()}`]}>
+                {m.logo ? (
+                  <img
+                    class="marca__logo"
+                    src={urlImagem(m.logo, { h: 160, auto: 'format,compress' })}
+                    alt=""
+                    height="80"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span class="marca__nome">{m.nome.replace(/\s*\(exemplo\)\s*/i, '')}</span>
+                )}
+                <span class="marca__nivel">{m.nivel}</span>
+                <svg class="marca__estrela" viewBox="0 0 24 24" width="28" height="28" focusable="false">
+                  <path d="M12 1.5l3.1 6.9 7.4.7-5.6 5 1.7 7.4L12 17.8l-6.6 3.7 1.7-7.4-5.6-5 7.4-.7z" fill="currentColor" />
+                </svg>
+              </span>
+            ))}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="convite-patrocinio" data-revelar>
+      <div class="convite-patrocinio__arte" data-seguir="30" aria-hidden="true">
+        <Ilustracao nome="camisa" espessura={2.4} />
+      </div>
+      <div class="convite-patrocinio__texto">
+        <p class="convite-patrocinio__chapeu">Seja patrocinador</p>
+        <p class="convite-patrocinio__titulo">Coloque sua marca no peito do Vila Ferreira</p>
+        <ul class="vantagens" role="list">
+          {
+            vantagens.map((v, i) => (
+              <li class="vantagem">
+                <span class="vantagem__numero" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <strong>{v.titulo}</strong>
+                <span>{v.texto}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <Botao href="/patrocinadores" variante="ouro">Quero patrocinar</Botao>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .patrocinio {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--espaco-secao);
+  }
+
+  .patrocinio__cabecalho {
+    display: grid;
+    gap: var(--espaco-2);
+    margin-bottom: var(--espaco-6);
+  }
+
+  @media (min-width: 56rem) {
+    .patrocinio__cabecalho {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+      align-items: end;
+      column-gap: var(--espaco-7);
+    }
+
+    .patrocinio__chapeu {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .patrocinio__intro {
+    max-width: 36ch;
+    font-size: var(--texto-lg);
+    color: var(--cor-texto-suave);
+  }
+
+  .patrocinio__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cor-destaque);
+  }
+
+  .patrocinio h2 {
+    max-width: 14ch;
+    font-size: var(--titulo-xl);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--verde-900);
+  }
+
+  /* ---------- Letreiro de marcas ---------- */
+  .marcas {
+    padding-block: var(--espaco-6);
+    border-block: 1px solid var(--cor-borda);
+    rotate: -1.5deg;
+    margin-inline: -2rem;
+    background: var(--cor-superficie);
+  }
+
+  .marcas__bloco,
+  .marca {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .marca {
+    gap: var(--espaco-4);
+    padding-right: var(--espaco-6);
+  }
+
+  .marca__nome {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.25rem, 1.4rem + 3.5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--verde-900);
+  }
+
+  .marca--master .marca__nome,
+  .marca--ouro .marca__nome {
+    color: var(--verde-900);
+    -webkit-text-stroke: 0;
+  }
+
+  .marca__logo {
+    height: clamp(3rem, 2rem + 3vw, 5rem);
+    width: auto;
+    object-fit: contain;
+  }
+
+  .marca__nivel {
+    align-self: start;
+    padding: 0.125rem var(--espaco-2);
+    border-radius: 999px;
+    background: var(--verde-100);
+    color: var(--verde-900);
+    font-family: var(--fonte-titulo);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .marca--master .marca__nivel {
+    background: var(--ouro-500);
+    color: var(--verde-950);
+  }
+
+  .marca__estrela {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-left: var(--espaco-4);
+    color: var(--ouro-500);
+  }
+
+  /* ---------- Convite ---------- */
+  .convite-patrocinio {
+    position: relative;
+    display: grid;
+    gap: var(--espaco-6);
+    align-items: center;
+    margin-top: var(--espaco-8);
+    padding: clamp(1.5rem, 4vw, 4rem);
+    border-radius: var(--raio-lg);
+    background:
+      radial-gradient(ellipse 60% 80% at 15% 50%, rgb(17 128 51 / 0.55), transparent 70%),
+      var(--verde-900);
+    color: var(--verde-100);
+    overflow: hidden;
+  }
+
+  @media (min-width: 56rem) {
+    .convite-patrocinio {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+  }
+
+  .convite-patrocinio__arte {
+    width: min(100%, 20rem);
+    justify-self: center;
+    color: var(--branco);
+  }
+
+  @media (max-width: 55.9375rem) {
+    .convite-patrocinio__arte {
+      width: 9rem;
+      justify-self: start;
+    }
+  }
+
+  .convite-patrocinio__arte :global(.ilustracao) {
+    width: 100%;
+    height: auto;
+  }
+
+  .convite-patrocinio__texto {
+    display: grid;
+    gap: var(--espaco-4);
+    justify-items: start;
+  }
+
+  .convite-patrocinio__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
+  }
+
+  .convite-patrocinio__titulo {
+    max-width: 18ch;
+    font-family: var(--fonte-titulo);
+    font-size: var(--titulo-lg);
+    font-weight: 800;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--branco);
+  }
+
+  .vantagens {
+    display: grid;
+    gap: var(--espaco-4);
+    width: 100%;
+    margin-block: var(--espaco-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 40rem) {
+    .vantagens {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .vantagem {
+    display: grid;
+    gap: var(--espaco-1);
+    align-content: start;
+    padding-top: var(--espaco-3);
+    border-top: 1px solid rgb(255 255 255 / 0.2);
+    font-size: var(--texto-sm);
+    color: var(--verde-200);
+  }
+
+  .vantagem__numero {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    color: var(--ouro-400);
+  }
+
+  .vantagem strong {
+    font-family: var(--fonte-titulo);
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    color: var(--branco);
+  }
+</style>
