@@ -12,17 +12,17 @@ const { nome } = Astro.props;
 <header class="cabecalho">
   <div class="container cabecalho__interno">
     <a class="marca" href="/" aria-label={`${nome}, página inicial`}>
-      <Escudo tamanho={40} />
+      <Escudo tamanho={44} class="marca__escudo" />
       <span class="marca__texto">
         <span class="marca__nome">Vila Ferreira</span>
         <span class="marca__desde">Desde 1984</span>
       </span>
     </a>
 
-    <!-- Sem JavaScript o menu fica sempre visível. Com JS, vira um menu recolhível no celular. -->
+    <!-- Sem JavaScript o menu fica sempre visível. Com JS, vira um menu em tela cheia no celular. -->
     <button class="cabecalho__alternar" type="button" aria-expanded="false" aria-controls="menu-principal" hidden>
+      <span class="cabecalho__alternar-texto">Menu</span>
       <span class="cabecalho__icone" aria-hidden="true"></span>
-      Menu
     </button>
 
     <Navigation id="menu-principal" itens={menuPrincipal} destaque={menuDestaque} />
@@ -30,21 +30,50 @@ const { nome } = Astro.props;
 </header>
 
 <script>
+  import { pararRolagem } from '@/scripts/rolagem';
+
+  const cabecalho = document.querySelector<HTMLElement>('.cabecalho');
   const botao = document.querySelector<HTMLButtonElement>('.cabecalho__alternar');
   const menu = document.getElementById('menu-principal');
+
+  const abrir = (aberto: boolean) => {
+    if (!botao) return;
+    botao.setAttribute('aria-expanded', String(aberto));
+    botao.querySelector('.cabecalho__alternar-texto')!.textContent = aberto ? 'Fechar' : 'Menu';
+    document.documentElement.classList.toggle('menu-aberto', aberto);
+    pararRolagem(aberto);
+  };
+
   if (botao && menu) {
     botao.hidden = false;
     document.documentElement.classList.add('menu-recolhivel');
-    botao.addEventListener('click', () => {
-      const aberto = botao.getAttribute('aria-expanded') === 'true';
-      botao.setAttribute('aria-expanded', String(!aberto));
-    });
+    botao.addEventListener('click', () => abrir(botao.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (e) => (e.target as Element).closest('a') && abrir(false));
     document.addEventListener('keydown', (evento) => {
       if (evento.key === 'Escape' && botao.getAttribute('aria-expanded') === 'true') {
-        botao.setAttribute('aria-expanded', 'false');
+        abrir(false);
         botao.focus();
       }
     });
+  }
+
+  // Fica sólido depois de rolar um pouco; some ao descer e volta ao subir.
+  if (cabecalho) {
+    let anterior = scrollY;
+    const atualizar = () => {
+      const y = scrollY;
+      cabecalho.classList.toggle('cabecalho--solido', y > 24);
+      const descendo = y > anterior + 4;
+      const subindo = y < anterior - 4;
+      if (!document.documentElement.classList.contains('menu-aberto')) {
+        if (descendo && y > 320) cabecalho.classList.add('cabecalho--oculto');
+        else if (subindo || y < 320) cabecalho.classList.remove('cabecalho--oculto');
+      }
+      anterior = y;
+    };
+    addEventListener('scroll', atualizar, { passive: true });
+    cabecalho.addEventListener('focusin', () => cabecalho.classList.remove('cabecalho--oculto'));
+    atualizar();
   }
 </script>
 
@@ -53,10 +82,29 @@ const { nome } = Astro.props;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--cor-marca-forte);
+    background: var(--verde-900);
     color: var(--cor-sobre-marca);
-    border-bottom: 4px solid var(--branco);
-    box-shadow: 0 1px 0 var(--verde-700);
+    transition:
+      transform 500ms var(--curva-saida),
+      background-color 300ms ease,
+      box-shadow 300ms ease;
+  }
+
+  .cabecalho--solido {
+    background: rgb(5 42 19 / 0.82);
+    backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 1px 0 rgb(242 203 44 / 0.35);
+  }
+
+  .cabecalho--oculto {
+    transform: translateY(-100%);
+  }
+
+  /* Menu do celular aberto: sem filtro, senão o menu (position: fixed) fica preso dentro do cabeçalho. */
+  :global(.menu-aberto) .cabecalho {
+    backdrop-filter: none;
+    background: var(--verde-950);
+    transform: none;
   }
 
   .cabecalho__interno {
@@ -69,11 +117,21 @@ const { nome } = Astro.props;
   }
 
   .marca {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: var(--espaco-3);
     color: inherit;
     text-decoration: none;
+  }
+
+  .marca :global(.marca__escudo) {
+    transition: rotate 700ms var(--curva-saida);
+  }
+
+  .marca:hover :global(.marca__escudo) {
+    rotate: -12deg;
   }
 
   .marca__texto {
@@ -84,27 +142,30 @@ const { nome } = Astro.props;
   .marca__nome {
     font-family: var(--fonte-titulo);
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
   }
 
   .marca__desde {
     font-size: 0.75rem;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    opacity: 0.85;
+    color: var(--ouro-400);
   }
 
   .cabecalho__alternar {
+    position: relative;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
-    gap: var(--espaco-2);
+    gap: var(--espaco-3);
     padding: var(--espaco-2) var(--espaco-3);
     background: transparent;
-    border: 2px solid currentColor;
-    border-radius: var(--raio-sm);
+    border: 0;
     font-family: var(--fonte-titulo);
-    font-weight: 600;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
   }
@@ -113,44 +174,89 @@ const { nome } = Astro.props;
     display: none;
   }
 
-  .cabecalho__icone,
-  .cabecalho__icone::before,
-  .cabecalho__icone::after {
-    display: block;
-    width: 1.125rem;
-    height: 2px;
-    background: currentColor;
-    transition: transform var(--transicao);
-  }
-
   .cabecalho__icone {
     position: relative;
+    display: block;
+    width: 1.75rem;
+    height: 0.75rem;
   }
 
   .cabecalho__icone::before,
   .cabecalho__icone::after {
     content: '';
     position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transition:
+      transform 500ms var(--curva-saida),
+      top 500ms var(--curva-saida);
   }
 
-  .cabecalho__icone::before { top: -6px; }
-  .cabecalho__icone::after { top: 6px; }
+  .cabecalho__icone::before { top: 0; }
+  .cabecalho__icone::after { top: calc(100% - 2px); }
 
-  /* Celular com JS: menu recolhido até o usuário abrir. */
+  [aria-expanded='true'] .cabecalho__icone::before {
+    top: calc(50% - 1px);
+    transform: rotate(45deg);
+  }
+
+  [aria-expanded='true'] .cabecalho__icone::after {
+    top: calc(50% - 1px);
+    transform: rotate(-45deg);
+  }
+
+  /* Celular com JS: menu em tela cheia, com os links grandes entrando um a um. */
   @media (max-width: 52rem) {
     :global(.menu-recolhivel #menu-principal) {
-      flex-basis: 100%;
-      display: none;
-      padding-bottom: var(--espaco-3);
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: grid;
+      align-content: center;
+      padding: 6rem var(--margem-lateral) var(--espaco-7);
+      background: var(--verde-950);
+      clip-path: circle(0% at calc(100% - 3rem) 2.5rem);
+      visibility: hidden;
+      transition:
+        clip-path 800ms var(--curva-entra-sai),
+        visibility 0s 800ms;
     }
 
-    :global(.menu-recolhivel .cabecalho__alternar[aria-expanded='true'] + #menu-principal) {
-      display: block;
+    :global(.menu-aberto #menu-principal) {
+      clip-path: circle(150% at calc(100% - 3rem) 2.5rem);
+      visibility: visible;
+      transition:
+        clip-path 900ms var(--curva-entra-sai),
+        visibility 0s;
     }
 
     :global(.menu-recolhivel #menu-principal ul) {
       flex-direction: column;
-      align-items: stretch;
+      align-items: flex-start;
+      gap: var(--espaco-2);
+    }
+
+    :global(.menu-recolhivel #menu-principal li) {
+      opacity: 0;
+      translate: 0 2rem;
+      transition:
+        opacity 500ms ease,
+        translate 700ms var(--curva-saida);
+    }
+
+    :global(.menu-aberto #menu-principal li) {
+      opacity: 1;
+      translate: 0 0;
+      transition-delay: calc(250ms + var(--i, 0) * 60ms);
+    }
+
+    :global(.menu-recolhivel .nav__link),
+    :global(.menu-recolhivel .nav__destaque) {
+      font-size: clamp(2.5rem, 12vw, 4rem);
+      font-weight: 800;
+      line-height: 1;
     }
   }
 

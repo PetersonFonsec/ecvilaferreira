@@ -9,10 +9,10 @@ const diretoria = await getDiretoria();
 ---
 
 <BaseLayout titulo="Diretoria" descricao="Conheça a diretoria do Esporte Clube Vila Ferreira.">
-  <Hero chapeu="Clube" titulo="Diretoria" texto="Gente do bairro que dedica seu tempo para manter o clube vivo." />
+  <Hero ilustracao="apito" chapeu="Clube" titulo="Diretoria" texto="Gente do bairro que dedica seu tempo para manter o clube vivo." />
 
   <Section>
-    <ul class="grade grade--estreita" role="list">
+    <ul class="grade grade--estreita" role="list" data-revelar="grupo">
       {
         diretoria.map((membro) => (
           <li>

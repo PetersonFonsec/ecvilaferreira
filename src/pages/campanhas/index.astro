@@ -11,12 +11,12 @@ const encerradas = campanhas.filter((c) => c.status === 'Encerrada');
 ---
 
 <BaseLayout titulo="Campanhas" descricao="Campanhas de arrecadação do Vila Ferreira. Acompanhe as metas e doe via PIX.">
-  <Hero chapeu="Apoie" titulo="Campanhas" texto="Cada real vira bola, uniforme, lanche e festa para o bairro. Acompanhe as metas e o resultado de cada campanha." />
+  <Hero ilustracao="cofrinho" chapeu="Apoie" titulo="Campanhas" texto="Cada real vira bola, uniforme, lanche e festa para o bairro. Acompanhe as metas e o resultado de cada campanha." />
 
   <Section titulo="Em andamento" id="abertas">
     {
       abertas.length > 0 ? (
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {abertas.map((campanha) => (
             <li>
               <CampaignCard campanha={campanha} />
@@ -32,7 +32,7 @@ const encerradas = campanhas.filter((c) => c.status === 'Encerrada');
   {
     encerradas.length > 0 && (
       <Section tom="claro" titulo="Encerradas" subtitulo="Veja o que conquistamos juntos." id="encerradas">
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {encerradas.map((campanha) => (
             <li>
               <CampaignCard campanha={campanha} />

@@ -9,12 +9,12 @@ const produtos = await getProdutos();
 ---
 
 <BaseLayout titulo="Loja oficial" descricao="Camisas e produtos oficiais do Vila Ferreira. Peça pelo WhatsApp.">
-  <Hero chapeu="Loja" titulo="Loja oficial" texto="Escolha o produto e finalize o pedido direto com o clube pelo WhatsApp." />
+  <Hero ilustracao="camisa" chapeu="Loja" titulo="Loja oficial" texto="Escolha o produto e finalize o pedido direto com o clube pelo WhatsApp." />
 
   <Section>
     {
       produtos.length > 0 ? (
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {produtos.map((produto) => (
             <li>
               <ProductCard produto={produto} nivelTitulo="h2" />

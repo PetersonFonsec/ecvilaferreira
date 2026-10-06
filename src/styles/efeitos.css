@@ -1,0 +1,331 @@
+/*
+ * Efeitos de movimento (revelar ao rolar, cursor próprio, letreiro, transições entre páginas).
+ * Os estados "escondidos" só valem com a classe .js (posta no <head>) e sem "reduzir movimento",
+ * então sem JavaScript tudo aparece normalmente.
+ */
+@layer efeitos {
+  /* ---------- Revelar ao rolar ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .js:not(.revelar-tudo) [data-revelar]:not([data-revelar='grupo']):not(.revelado),
+    .js:not(.revelar-tudo) [data-revelar='grupo']:not(.revelado) > * {
+      opacity: 0;
+      translate: 0 2.5rem;
+    }
+
+    .js:not(.revelar-tudo) [data-revelar='zoom']:not(.revelado) {
+      scale: 0.92;
+      translate: 0 0;
+    }
+
+    .js:not(.revelar-tudo) [data-revelar='esquerda']:not(.revelado) {
+      translate: -3rem 0;
+    }
+
+    .js [data-revelar]:not([data-revelar='grupo']),
+    .js [data-revelar='grupo'] > * {
+      transition:
+        opacity 900ms var(--curva-saida),
+        translate var(--duracao-revelar) var(--curva-saida),
+        scale var(--duracao-revelar) var(--curva-saida);
+      transition-delay: calc(var(--i, 0) * 90ms + var(--atraso, 0ms));
+    }
+
+    /* Imagem que aparece por uma "cortina" que sobe. */
+    .js:not(.revelar-tudo) [data-revelar='mascara']:not(.revelado) {
+      opacity: 1;
+      translate: 0 0;
+      clip-path: inset(100% 0 0 0);
+    }
+
+    .js [data-revelar='mascara'] {
+      clip-path: inset(0 0 0 0);
+      transition: clip-path 1300ms var(--curva-entra-sai);
+    }
+
+    /* Títulos palavra por palavra */
+    .js [data-dividir] .palavra {
+      display: inline-block;
+      overflow: clip;
+      overflow-clip-margin: 0.1em;
+      vertical-align: top;
+      padding-block: 0.06em;
+      margin-block: -0.06em;
+    }
+
+    .js [data-dividir] .palavra > span {
+      display: inline-block;
+      transition: translate 1100ms var(--curva-saida);
+      transition-delay: calc(var(--i, 0) * 55ms + var(--atraso, 0ms));
+    }
+
+    .js:not(.revelar-tudo) [data-dividir]:not(.revelado) .palavra > span {
+      translate: 0 110%;
+    }
+
+    /* Ilustrações: os traços se desenham (cada traço tem pathLength="1"). */
+    .js .ilustracao .traco {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1800ms var(--curva-entra-sai);
+      transition-delay: calc(var(--t, 0) * 90ms + var(--atraso, 0ms));
+    }
+
+    .js:not(.revelar-tudo) .ilustracao:not(.revelado) .traco {
+      stroke-dashoffset: 1;
+    }
+
+    .js .ilustracao .preenche {
+      transition:
+        opacity 900ms ease,
+        scale 900ms var(--curva-saida);
+      transition-delay: calc(900ms + var(--t, 0) * 90ms + var(--atraso, 0ms));
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .js:not(.revelar-tudo) .ilustracao:not(.revelado) .preenche {
+      opacity: 0;
+      scale: 0.6;
+    }
+  }
+
+  /* ---------- Palavras que acendem com a rolagem ---------- */
+  .acender--js .palavra {
+    opacity: calc(0.18 + var(--luz, 0) * 0.82);
+    transition: opacity 120ms linear;
+  }
+
+  /* ---------- Cursor próprio ---------- */
+  .cursor-proprio,
+  .cursor-proprio * {
+    cursor: none;
+  }
+
+  .cursor-proprio :is(input:not([type='submit'], [type='button']), textarea, select, [contenteditable]) {
+    cursor: text;
+  }
+
+  .cursor {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  .cursor--visivel {
+    opacity: 1;
+  }
+
+  .cursor__ponto,
+  .cursor__anel {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .cursor__ponto {
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: -0.25rem 0 0 -0.25rem;
+    border-radius: 50%;
+    background: var(--ouro-500);
+    transition: opacity 200ms ease;
+  }
+
+  .cursor__anel {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -1.375rem 0 0 -1.375rem;
+  }
+
+  .cursor__anel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--ouro-500);
+    border-radius: 50%;
+    transition:
+      scale 450ms var(--curva-saida),
+      background-color 300ms ease,
+      border-color 300ms ease;
+  }
+
+  .cursor--link .cursor__anel::before {
+    scale: 1.6;
+    background: rgb(242 203 44 / 0.16);
+  }
+
+  .cursor--pressionado .cursor__anel::before {
+    scale: 0.8;
+  }
+
+  .cursor--link.cursor--pressionado .cursor__anel::before {
+    scale: 1.3;
+  }
+
+  .cursor__rotulo {
+    position: relative;
+    font-family: var(--fonte-titulo);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--verde-950);
+    opacity: 0;
+    scale: 0.5;
+    transition:
+      opacity 250ms ease,
+      scale 450ms var(--curva-saida);
+  }
+
+  .cursor--rotulo .cursor__anel::before {
+    scale: 2.4;
+    background: var(--ouro-500);
+    border-color: var(--ouro-500);
+  }
+
+  .cursor--rotulo .cursor__rotulo {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .cursor--rotulo .cursor__ponto {
+    opacity: 0;
+  }
+
+  .cursor--escuro .cursor__anel::before {
+    border-color: var(--verde-700);
+  }
+
+  .cursor--escuro .cursor__ponto {
+    background: var(--verde-700);
+  }
+
+  /* ---------- Barra de leitura ---------- */
+  .progresso-leitura {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ouro-600), var(--ouro-400));
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    pointer-events: none;
+  }
+
+  /* ---------- Letreiro (faixa de texto infinita) ---------- */
+  .letreiro {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .letreiro__faixa {
+    display: inline-flex;
+    will-change: transform;
+  }
+
+  /* Sem JS, o letreiro anda sozinho em CSS. */
+  @media (prefers-reduced-motion: no-preference) {
+    .letreiro:not(.letreiro--js) .letreiro__faixa {
+      animation: letreiro 40s linear infinite;
+    }
+  }
+
+  @keyframes letreiro {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ---------- Cards que inclinam ---------- */
+  [data-inclinar] {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 600ms var(--curva-saida);
+  }
+
+  [data-inclinar].inclinado {
+    transition-duration: 120ms;
+  }
+
+  [data-inclinar]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgb(242 203 44 / 0.22),
+      transparent 55%
+    );
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+
+  [data-inclinar].inclinado::after {
+    opacity: 1;
+  }
+
+  /* ---------- Textura de grão sobre o site (filme antigo, arquibancada) ---------- */
+  .grao {
+    position: fixed;
+    inset: -50%;
+    z-index: 999;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .grao {
+      animation: grao 900ms steps(6) infinite;
+    }
+  }
+
+  @keyframes grao {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-4%, 3%); }
+    40% { transform: translate(3%, -5%); }
+    60% { transform: translate(-6%, -2%); }
+    80% { transform: translate(5%, 4%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* ---------- Transição entre páginas (navegadores com View Transitions) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+      navigation: auto;
+    }
+
+    ::view-transition-old(root) {
+      animation: 450ms var(--curva-entra-sai) both pagina-sai;
+    }
+
+    ::view-transition-new(root) {
+      animation: 700ms var(--curva-saida) 120ms both pagina-entra;
+    }
+  }
+
+  @keyframes pagina-sai {
+    to {
+      opacity: 0;
+      transform: translateY(-3rem) scale(0.98);
+    }
+  }
+
+  @keyframes pagina-entra {
+    from {
+      opacity: 0;
+      transform: translateY(4rem);
+    }
+  }
+}

@@ -7,7 +7,7 @@ interface Props {
   subtitulo?: string;
   /** Rótulo pequeno acima do título (ex.: "Comunidade"). */
   chapeu?: string;
-  tom?: 'padrao' | 'claro' | 'marca';
+  tom?: 'padrao' | 'claro' | 'marca' | 'escuro';
   id?: string;
   class?: string;
 }
@@ -21,9 +21,9 @@ const idTitulo = id ? `${id}-titulo` : undefined;
     {
       titulo && (
         <header class="secao__cabecalho">
-          {chapeu && <p class="secao__chapeu">{chapeu}</p>}
-          <h2 id={idTitulo}>{titulo}</h2>
-          {subtitulo && <p class="secao__subtitulo">{subtitulo}</p>}
+          {chapeu && <p class="secao__chapeu" data-revelar>{chapeu}</p>}
+          <h2 id={idTitulo} data-dividir>{titulo}</h2>
+          {subtitulo && <p class="secao__subtitulo" data-revelar style="--atraso: 200ms">{subtitulo}</p>}
           <slot name="acao" />
         </header>
       )
@@ -46,8 +46,24 @@ const idTitulo = id ? `${id}-titulo` : undefined;
     color: var(--cor-sobre-marca);
   }
 
-  .secao--marca :global(a:not([class])) {
+  .secao--escuro {
+    background: var(--verde-950);
+    color: var(--verde-100);
+  }
+
+  .secao--marca :global(a:not([class])),
+  .secao--escuro :global(a:not([class])) {
     color: inherit;
+  }
+
+  .secao h2 {
+    font-size: var(--titulo-lg);
+    font-weight: 800;
+    line-height: 0.95;
+  }
+
+  .secao--escuro h2 {
+    color: var(--branco);
   }
 
   .secao__cabecalho {
@@ -58,6 +74,9 @@ const idTitulo = id ? `${id}-titulo` : undefined;
   }
 
   .secao__chapeu {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
     font-family: var(--fonte-titulo);
     font-weight: 600;
     font-size: 1rem;
@@ -66,8 +85,17 @@ const idTitulo = id ? `${id}-titulo` : undefined;
     color: var(--cor-destaque);
   }
 
-  .secao--marca .secao__chapeu {
-    color: var(--verde-200);
+  .secao__chapeu::before {
+    content: '';
+    width: 0.625rem;
+    height: 0.625rem;
+    background: var(--ouro-500);
+    clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+
+  .secao--marca .secao__chapeu,
+  .secao--escuro .secao__chapeu {
+    color: var(--ouro-400);
   }
 
   .secao__subtitulo {
@@ -75,7 +103,8 @@ const idTitulo = id ? `${id}-titulo` : undefined;
     color: var(--cor-texto-suave);
   }
 
-  .secao--marca .secao__subtitulo {
-    color: var(--verde-100);
+  .secao--marca .secao__subtitulo,
+  .secao--escuro .secao__subtitulo {
+    color: var(--verde-200);
   }
 </style>

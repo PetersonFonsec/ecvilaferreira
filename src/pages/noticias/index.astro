@@ -9,12 +9,12 @@ const noticias = await getNoticias();
 ---
 
 <BaseLayout titulo="Notícias" descricao="Notícias do Vila Ferreira: jogos, campeonatos, eventos e ações na comunidade.">
-  <Hero chapeu="Clube" titulo="Notícias" texto="O que acontece dentro e fora de campo." />
+  <Hero ilustracao="megafone" chapeu="Clube" titulo="Notícias" texto="O que acontece dentro e fora de campo." />
 
   <Section>
     {
       noticias.length > 0 ? (
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {noticias.map((noticia) => (
             <li>
               <NewsCard noticia={noticia} nivelTitulo="h2" />

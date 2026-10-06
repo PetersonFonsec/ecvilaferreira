@@ -10,10 +10,10 @@ const projetos = await getProjetos();
 ---
 
 <BaseLayout titulo="Projetos sociais" descricao="Projetos sociais, eventos e ações do Vila Ferreira no bairro.">
-  <Hero chapeu="Comunidade" titulo="Projetos sociais" texto="Futebol é a nossa porta de entrada. A comunidade é a razão de existir." />
+  <Hero ilustracao="bairro" chapeu="Comunidade" titulo="Projetos sociais" texto="Futebol é a nossa porta de entrada. A comunidade é a razão de existir." />
 
   <Section>
-    <ul class="grade" role="list">
+    <ul class="grade" role="list" data-revelar="grupo">
       {
         projetos.map((projeto) => (
           <li>

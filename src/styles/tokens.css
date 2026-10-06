@@ -4,25 +4,33 @@
  */
 @layer tokens {
   :root {
-    /* Paleta oficial: verde e branco */
-    --verde-950: #072a17;
-    --verde-900: #0a3d22;
-    --verde-800: #0d4d2b;
-    --verde-700: #0f5c32;
-    --verde-600: #13753f;
-    --verde-500: #1b8f4e;
-    --verde-200: #b9dcc6;
-    --verde-100: #e3f1e8;
+    /* Paleta oficial, tirada do brasão: verde, branco e dourado */
+    --verde-950: #031a0b;
+    --verde-900: #052a13;
+    --verde-800: #073a1a;
+    --verde-700: #0b6427;
+    --verde-600: #118033;
+    --verde-500: #1e9a46;
+    --verde-300: #7cc596;
+    --verde-200: #bfe3cb;
+    --verde-100: #e6f4ea;
     --branco: #ffffff;
 
+    --ouro-300: #f8e08a;
+    --ouro-400: #f5d04c;
+    --ouro-500: #f2cb2c; /* as estrelas do brasão */
+    --ouro-600: #d4a514;
+    --ouro-700: #a37a07;
+    --ouro-800: #8a6700; /* dourado para texto sobre fundo claro (contraste AA) */
+
     /* Apoio: tons de "cal" (linhas do campo) e "terra" (o chão da várzea) */
-    --cal: #f6f4ee;
-    --cal-escura: #e9e5da;
+    --cal: #f7f5ee;
+    --cal-escura: #ebe7da;
     --terra: #a8582a;
-    --ouro: #d4a72c;
-    --tinta: #15201a;
-    --tinta-suave: #4a5850;
-    --borda: #d9ddd6;
+    --ouro: var(--ouro-500);
+    --tinta: #0e1a12;
+    --tinta-suave: #46544b;
+    --borda: #dcdfd6;
 
     /* Papéis de cor (use estes nos componentes, não a paleta crua) */
     --cor-fundo: var(--cal);
@@ -31,13 +39,20 @@
     --cor-texto-suave: var(--tinta-suave);
     --cor-marca: var(--verde-700);
     --cor-marca-forte: var(--verde-900);
+    --cor-marca-profunda: var(--verde-950);
     --cor-marca-suave: var(--verde-100);
     --cor-sobre-marca: var(--branco);
-    --cor-destaque: var(--terra);
-    --cor-conquista: var(--ouro);
+    --cor-destaque: var(--ouro-800);
+    --cor-destaque-sobre-marca: var(--ouro-500);
+    --cor-conquista: var(--ouro-500);
     --cor-link: var(--verde-700);
-    --cor-foco: var(--ouro);
+    --cor-foco: var(--ouro-500);
     --cor-borda: var(--borda);
+
+    /* Cores usadas pelo componente Escudo */
+    --escudo-verde: var(--verde-700);
+    --escudo-branco: var(--branco);
+    --escudo-ouro: var(--ouro-500);
 
     /* Tipografia */
     --fonte-titulo: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
@@ -50,6 +65,7 @@
     --titulo-md: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
     --titulo-lg: clamp(2.25rem, 1.6rem + 3vw, 4rem);
     --titulo-xl: clamp(2.75rem, 1.8rem + 4.5vw, 5.5rem);
+    --titulo-gigante: clamp(3.5rem, 1rem + 10vw, 11rem);
 
     --altura-linha: 1.6;
     --altura-linha-titulo: 1.05;
@@ -74,9 +90,12 @@
     --raio-sm: 4px;
     --raio: 8px;
     --raio-lg: 16px;
-    --sombra: 0 1px 2px rgb(10 61 34 / 0.08), 0 4px 16px rgb(10 61 34 / 0.08);
-    --sombra-forte: 0 2px 4px rgb(10 61 34 / 0.12), 0 12px 32px rgb(10 61 34 / 0.14);
+    --sombra: 0 1px 2px rgb(5 42 19 / 0.08), 0 4px 16px rgb(5 42 19 / 0.08);
+    --sombra-forte: 0 2px 4px rgb(5 42 19 / 0.12), 0 12px 32px rgb(5 42 19 / 0.14);
 
     --transicao: 160ms ease;
+    --curva-saida: cubic-bezier(0.16, 1, 0.3, 1); /* "expo out": rápido no início, suave no fim */
+    --curva-entra-sai: cubic-bezier(0.76, 0, 0.24, 1);
+    --duracao-revelar: 1100ms;
   }
 }

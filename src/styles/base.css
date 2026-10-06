@@ -48,8 +48,10 @@
   }
 
   ::selection {
-    background: var(--verde-200);
+    background: var(--ouro-400);
+    color: var(--verde-950);
   }
+
 
   /* Texto vindo do Prismic (Rich Text) */
   .prosa {

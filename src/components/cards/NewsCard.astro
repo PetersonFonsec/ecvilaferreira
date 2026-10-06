@@ -10,7 +10,7 @@ interface Props {
 const { noticia, nivelTitulo: Titulo = 'h3' } = Astro.props;
 ---
 
-<article class="card">
+<article class="card" data-inclinar="5" data-cursor="Ver">
   <Midia imagem={noticia.imagem} />
   <div class="card__corpo">
     <p class="card__meta">

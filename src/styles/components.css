@@ -12,12 +12,12 @@
     border: 1px solid var(--cor-borda);
     border-radius: var(--raio);
     overflow: hidden;
-    transition: box-shadow var(--transicao), transform var(--transicao);
+    transition: box-shadow 400ms ease, border-color 400ms ease;
   }
 
   .card:has(.card__link:hover) {
     box-shadow: var(--sombra-forte);
-    transform: translateY(-2px);
+    border-color: var(--ouro-500);
   }
 
   .card:has(.card__link:focus-visible) {
@@ -42,6 +42,7 @@
 
   .card__titulo {
     font-size: var(--titulo-sm);
+    line-height: 1;
   }
 
   .card__link {
@@ -74,8 +75,8 @@
 
   .etiqueta {
     display: inline-block;
-    padding: 0.125rem var(--espaco-2);
-    border-radius: var(--raio-sm);
+    padding: 0.125rem var(--espaco-3);
+    border-radius: 999px;
     background: var(--cor-marca-suave);
     color: var(--cor-marca-forte);
     font-family: var(--fonte-titulo);

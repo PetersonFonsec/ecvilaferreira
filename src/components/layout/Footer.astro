@@ -57,16 +57,34 @@ const redes = [
 
   <div class="container rodape__base">
     <p>© {new Date().getFullYear()} {config.nome}. Feito no bairro, com o bairro.</p>
+    <a class="rodape__topo" href="#conteudo" data-magnetico="0.4" data-cursor="Topo">
+      Voltar ao topo
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+        <path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
   </div>
+
+  <p class="rodape__gigante" aria-hidden="true" data-revelar>
+    <span>Vila</span>
+    <Escudo tamanho={160} class="rodape__gigante-escudo" />
+    <span>Ferreira</span>
+  </p>
 </footer>
 
 <style>
   .rodape {
     margin-top: var(--espaco-secao);
-    background: var(--cor-marca-forte);
-    color: var(--verde-100);
-    border-top: 6px solid var(--branco);
+    overflow: clip;
+    background: var(--verde-950);
+    color: var(--verde-200);
+    border-top: 3px solid var(--ouro-500);
     font-size: var(--texto-sm);
+  }
+
+  /* Na home, a última seção já é escura e encosta no rodapé. */
+  :global(main:has(> .loja-chamada:last-child)) + .rodape {
+    margin-top: 0;
   }
 
   .rodape__grade {
@@ -126,14 +144,72 @@ const redes = [
 
   .rodape a {
     color: var(--verde-100);
+    text-decoration: none;
+    background: linear-gradient(var(--ouro-500), var(--ouro-500)) 0 100% / 0% 1px no-repeat;
+    transition:
+      background-size 450ms var(--curva-saida),
+      color 200ms ease;
   }
 
   .rodape a:hover {
-    color: var(--branco);
+    color: var(--ouro-400);
+    background-size: 100% 1px;
+  }
+
+  .rodape__titulo {
+    color: var(--ouro-400) !important;
   }
 
   .rodape__base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-4);
     padding-block: var(--espaco-4);
-    border-top: 1px solid rgb(255 255 255 / 0.15);
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .rodape .rodape__topo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    padding: var(--espaco-2) var(--espaco-4);
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: 999px;
+    font-family: var(--fonte-titulo);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: none;
+  }
+
+  .rodape .rodape__topo:hover {
+    border-color: var(--ouro-500);
+  }
+
+  /* Assinatura gigante no fim da página. */
+  .rodape__gigante {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15em;
+    padding-bottom: var(--espaco-5);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(3rem, 15vw, 15rem);
+    font-weight: 800;
+    line-height: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(242 203 44 / 0.5);
+    user-select: none;
+  }
+
+  .rodape__gigante :global(.rodape__gigante-escudo) {
+    width: 0.8em;
+    height: auto;
+    flex: none;
   }
 </style>

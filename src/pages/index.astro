@@ -3,11 +3,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/ui/Hero.astro';
 import Section from '@/components/ui/Section.astro';
 import Botao from '@/components/ui/Botao.astro';
-import CTA from '@/components/ui/CTA.astro';
+import Ilustracao from '@/components/ui/Ilustracao.astro';
+import Letreiro from '@/components/ui/Letreiro.astro';
 import CampaignCard from '@/components/cards/CampaignCard.astro';
 import ProjectCard from '@/components/cards/ProjectCard.astro';
 import NewsCard from '@/components/cards/NewsCard.astro';
 import SponsorCard from '@/components/cards/SponsorCard.astro';
+import type { NomeIlustracao } from '@/data/ilustracoes';
 import {
   getCampanhas,
   getConfiguracoes,
@@ -27,11 +29,42 @@ const [config, campanhas, projetos, noticias, patrocinadores] = await Promise.al
 const campanhasAtivas = campanhas.filter((c) => c.status === 'Ativa').slice(0, 3);
 const anos = new Date().getFullYear() - config.fundacao;
 
-const pilares = [
-  { titulo: 'Clube', texto: 'História, fundadores, diretoria e conquistas.', href: '/historia' },
-  { titulo: 'Comunidade', texto: 'Projetos sociais, eventos e ações no bairro.', href: '/projetos' },
-  { titulo: 'Apoie', texto: 'Doe via PIX, ajude uma campanha ou patrocine.', href: '/apoie' },
-  { titulo: 'Loja', texto: 'Produtos oficiais para vestir as cores do clube.', href: '/loja' },
+const pilares: { titulo: string; texto: string; href: string; acao: string; ilustracao: NomeIlustracao }[] = [
+  {
+    titulo: 'Clube',
+    texto: 'História, fundadores, diretoria e conquistas de mais de quatro décadas de várzea.',
+    href: '/historia',
+    acao: 'Conhecer a história',
+    ilustracao: 'trofeu',
+  },
+  {
+    titulo: 'Comunidade',
+    texto: 'Projetos sociais, eventos e ações que fazem do campo um ponto de encontro do bairro.',
+    href: '/projetos',
+    acao: 'Ver os projetos',
+    ilustracao: 'bairro',
+  },
+  {
+    titulo: 'Apoie',
+    texto: 'Doe via PIX, ajude uma campanha ou patrocine. Cada real é registrado na transparência.',
+    href: '/apoie',
+    acao: 'Quero apoiar',
+    ilustracao: 'coracao',
+  },
+  {
+    titulo: 'Loja',
+    texto: 'Produtos oficiais para vestir as cores do clube. O pedido é feito direto pelo WhatsApp.',
+    href: '/loja',
+    acao: 'Ir para a loja',
+    ilustracao: 'camisa',
+  },
+];
+
+const numeros = [
+  { valor: anos, rotulo: 'anos de história' },
+  { valor: config.fundacao, rotulo: 'ano de fundação', semContar: true },
+  { valor: projetos.length, rotulo: 'projetos sociais' },
+  { valor: campanhasAtivas.length, rotulo: campanhasAtivas.length === 1 ? 'campanha ativa' : 'campanhas ativas' },
 ];
 
 const jsonLd = {
@@ -39,54 +72,100 @@ const jsonLd = {
   '@type': 'SportsTeam',
   name: config.nome,
   sport: 'Futebol',
-  foundingDate: String(config.fundacao),
+  foundingDate: '1984-09-06',
   description: config.descricao,
   url: Astro.site?.toString(),
-  logo: new URL('/favicon.svg', Astro.site).toString(),
+  logo: new URL('/brasao.png', Astro.site).toString(),
   location: { '@type': 'Place', name: config.cidade, address: config.endereco },
   sameAs: [config.instagram, config.facebook, config.youtube].filter(Boolean),
 };
 ---
 
 <BaseLayout titulo={config.nome} jsonLd={jsonLd}>
-  <Hero variante="inicio" chapeu={`Desde ${config.fundacao}`} titulo={config.slogan} texto={config.descricao}>
-    <Botao href="/apoie" variante="claro">Apoie o clube</Botao>
+  <Hero variante="inicio" chapeu={`Desde ${config.fundacao} · ${config.cidade.split(',')[0]}`} titulo={config.slogan}>
+    <Botao href="/apoie" variante="ouro">Apoie o clube</Botao>
     <Botao href="/historia" variante="contorno">Nossa história</Botao>
   </Hero>
 
-  <Section chapeu={`${anos} anos de várzea`} titulo="Futebol, bairro e gente" id="pilares">
-    <ul class="pilares" role="list">
-      {
-        pilares.map((pilar, i) => (
-          <li class="pilar">
-            <span class="pilar__numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <h3>
-              <a href={pilar.href}>{pilar.titulo}</a>
-            </h3>
-            <p>{pilar.texto}</p>
-          </li>
-        ))
-      }
-    </ul>
-  </Section>
+  <div id="conteudo-inicio">
+    <Letreiro itens={['Mais que um time', `Desde ${config.fundacao}`, 'Várzea de São Bernardo', 'Verde, branco e dourado']} />
+  </div>
+
+  <section class="manifesto" aria-labelledby="manifesto-titulo">
+    <div class="container manifesto__grade">
+      <h2 id="manifesto-titulo" class="visualmente-oculto">O clube</h2>
+      <p class="manifesto__texto" data-acender>
+        Desde {config.fundacao}, o Vila Ferreira junta o bairro em volta de uma bola. Gerações de vizinhos, amigos e
+        famílias fazem do futebol de várzea um ponto de encontro, dentro e fora de campo.
+      </p>
+      <div class="manifesto__bola" data-parallax="0.18" aria-hidden="true">
+        <Ilustracao nome="bola" />
+      </div>
+    </div>
+
+    <div class="container">
+      <dl class="numeros" data-revelar="grupo">
+        {
+          numeros.map((n) => (
+            <div class="numero">
+              <dt>{n.rotulo}</dt>
+              <dd data-contar={n.semContar ? undefined : n.valor}>{n.valor}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="pilares" data-horizontal aria-labelledby="pilares-titulo">
+    <div class="pilares__fixo">
+      <div class="container pilares__cabecalho">
+        <p class="pilares__chapeu" data-revelar>{anos} anos de várzea</p>
+        <h2 id="pilares-titulo" data-dividir>Futebol, bairro e gente</h2>
+      </div>
+      <ol class="horizontal__trilho" role="list">
+        {
+          pilares.map((pilar, i) => (
+            <li class="horizontal__item pilar" style={`--i: ${i}`}>
+              <span class="pilar__numero" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div class="pilar__arte" aria-hidden="true">
+                <Ilustracao nome={pilar.ilustracao} />
+              </div>
+              <h3 class="pilar__titulo">{pilar.titulo}</h3>
+              <p class="pilar__texto">{pilar.texto}</p>
+              <a class="pilar__link" href={pilar.href} data-cursor="Ir">
+                {pilar.acao}
+                <span class="visualmente-oculto"> ({pilar.titulo})</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="pilares__barra" aria-hidden="true"><span /></div>
+    </div>
+  </section>
 
   {
     campanhasAtivas.length > 0 && (
       <Section tom="claro" chapeu="Apoie" titulo="Campanhas em andamento" id="campanhas">
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {campanhasAtivas.map((campanha) => (
             <li>
               <CampaignCard campanha={campanha} />
             </li>
           ))}
         </ul>
-        <p class="ver-mais"><a href="/campanhas">Ver todas as campanhas</a></p>
+        <p class="ver-mais" data-revelar>
+          <a href="/campanhas">Ver todas as campanhas</a>
+        </p>
       </Section>
     )
   }
 
   <Section chapeu="Comunidade" titulo="Projetos sociais" subtitulo="O Vila Ferreira joga dentro e fora de campo." id="projetos">
-    <ul class="grade" role="list">
+    <ul class="grade" role="list" data-revelar="grupo">
       {
         projetos.slice(0, 3).map((projeto) => (
           <li>
@@ -95,20 +174,22 @@ const jsonLd = {
         ))
       }
     </ul>
-    <p class="ver-mais"><a href="/projetos">Conheça todos os projetos</a></p>
+    <p class="ver-mais" data-revelar><a href="/projetos">Conheça todos os projetos</a></p>
   </Section>
 
   {
     noticias.length > 0 && (
       <Section tom="claro" chapeu="Clube" titulo="Últimas notícias" id="noticias">
-        <ul class="grade" role="list">
+        <ul class="grade" role="list" data-revelar="grupo">
           {noticias.slice(0, 3).map((noticia) => (
             <li>
               <NewsCard noticia={noticia} />
             </li>
           ))}
         </ul>
-        <p class="ver-mais"><a href="/noticias">Todas as notícias</a></p>
+        <p class="ver-mais" data-revelar>
+          <a href="/noticias">Todas as notícias</a>
+        </p>
       </Section>
     )
   }
@@ -116,32 +197,154 @@ const jsonLd = {
   {
     patrocinadores.length > 0 && (
       <Section chapeu="Quem caminha com a gente" titulo="Patrocinadores" id="patrocinadores">
-        <ul class="grade grade--estreita" role="list">
+        <ul class="grade grade--estreita" role="list" data-revelar="grupo">
           {patrocinadores.map((patrocinador) => (
             <li>
               <SponsorCard patrocinador={patrocinador} />
             </li>
           ))}
         </ul>
-        <p class="ver-mais"><a href="/patrocinadores">Seja um patrocinador</a></p>
+        <p class="ver-mais" data-revelar>
+          <a href="/patrocinadores">Seja um patrocinador</a>
+        </p>
       </Section>
     )
   }
 
-  <div class="container">
-    <CTA
-      titulo="Vista as cores do bairro"
-      texto="Camisas e produtos oficiais. Cada compra ajuda a manter o clube e seus projetos."
-      acao={{ rotulo: 'Ver a loja', href: '/loja' }}
-    />
-  </div>
+  <section class="loja-chamada" aria-labelledby="loja-titulo">
+    <div class="container loja-chamada__grade">
+      <div class="loja-chamada__texto">
+        <p class="loja-chamada__chapeu" data-revelar>Loja oficial</p>
+        <h2 id="loja-titulo" data-dividir>Vista as cores do bairro</h2>
+        <p data-revelar style="--atraso: 200ms">
+          Camisas e produtos oficiais. Cada compra ajuda a manter o clube e seus projetos.
+        </p>
+        <div data-revelar style="--atraso: 350ms">
+          <Botao href="/loja" variante="ouro">Ver a loja</Botao>
+        </div>
+      </div>
+      <div class="loja-chamada__arte" data-seguir="40" aria-hidden="true">
+        <Ilustracao nome="camisa" espessura={2.5} />
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .pilares {
+  /* ---------- Manifesto ---------- */
+  .manifesto {
+    position: relative;
+    padding-block: var(--espaco-secao);
+    overflow: clip;
+  }
+
+  .manifesto__grade {
+    position: relative;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--espaco-6);
+  }
+
+  .manifesto__texto {
+    max-width: 22ch;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.25rem, 1rem + 4.2vw, 5rem);
+    font-weight: 800;
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--verde-900);
+  }
+
+  .manifesto__bola {
+    position: absolute;
+    top: -2rem;
+    right: 0;
+    width: clamp(7rem, 22vw, 18rem);
+    color: var(--verde-700);
+    opacity: 0.9;
+  }
+
+  @media (max-width: 47.9375rem) {
+    .manifesto__bola {
+      position: static;
+      justify-self: end;
+      order: -1;
+    }
+  }
+
+  .manifesto__bola :global(.ilustracao) {
+    width: 100%;
+    height: auto;
+  }
+
+  .numeros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    margin-top: var(--espaco-8);
+    border-top: 1px solid var(--cor-borda);
+  }
+
+  .numero {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--espaco-2);
+    padding: var(--espaco-5) var(--espaco-4) 0 0;
+  }
+
+  .numero dd {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(3rem, 2rem + 4vw, 6rem);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--verde-700);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .numero dt {
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cor-destaque);
+  }
+
+  /* ---------- Pilares (rolagem horizontal em telas largas) ---------- */
+  .pilares {
+    position: relative;
+    background: var(--verde-950);
+    color: var(--verde-100);
+  }
+
+  .pilares__fixo {
+    padding-block: var(--espaco-secao);
+  }
+
+  .pilares__cabecalho {
+    display: grid;
+    gap: var(--espaco-2);
+    margin-bottom: var(--espaco-6);
+  }
+
+  .pilares__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
+  }
+
+  .pilares h2 {
+    max-width: 14ch;
+    font-size: var(--titulo-lg);
+    font-weight: 800;
+    line-height: 0.95;
+    color: var(--branco);
+  }
+
+  .horizontal__trilho {
+    display: grid;
     gap: var(--espaco-5);
+    width: min(100% - 2 * var(--margem-lateral), var(--largura-max));
+    margin-inline: auto;
     padding: 0;
     list-style: none;
   }
@@ -149,40 +352,218 @@ const jsonLd = {
   .pilar {
     position: relative;
     display: grid;
-    gap: var(--espaco-2);
-    padding: var(--espaco-5);
-    padding-top: var(--espaco-6);
-    background: var(--cor-superficie);
-    border-top: 6px solid var(--cor-marca);
-    border-radius: var(--raio-sm);
+    gap: var(--espaco-3);
+    align-content: start;
+    padding: var(--espaco-6) var(--espaco-5);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--raio-lg);
+    background: linear-gradient(160deg, rgb(17 128 51 / 0.25), rgb(255 255 255 / 0.02));
+    overflow: hidden;
+    transition: border-color 400ms ease;
   }
 
-  .pilar:has(a:hover) {
-    box-shadow: var(--sombra);
+  .pilar:has(.pilar__link:hover) {
+    border-color: var(--ouro-500);
   }
 
   .pilar__numero {
+    position: absolute;
+    top: var(--espaco-3);
+    right: var(--espaco-4);
     font-family: var(--fonte-titulo);
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: clamp(4rem, 3rem + 4vw, 8rem);
+    font-weight: 800;
     line-height: 1;
-    color: var(--cor-destaque);
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(242 203 44 / 0.55);
   }
 
-  .pilar a {
-    color: inherit;
+  .pilar__arte {
+    width: 9rem;
+    color: var(--branco);
+  }
+
+  .pilar__arte :global(.ilustracao) {
+    width: 100%;
+    height: auto;
+  }
+
+  .pilar__titulo {
+    font-size: var(--titulo-md);
+    font-weight: 800;
+    color: var(--branco);
+  }
+
+  .pilar__texto {
+    max-width: 32ch;
+  }
+
+  .pilar__link {
+    justify-self: start;
+    margin-top: var(--espaco-3);
+    font-family: var(--fonte-titulo);
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
     text-decoration: none;
   }
 
-  .pilar a::after {
+  .pilar__link::before {
     content: '';
     position: absolute;
     inset: 0;
   }
 
-  .ver-mais {
-    margin-top: var(--espaco-6);
-    font-weight: 700;
+  .pilar__link::after {
+    content: ' →';
+    display: inline-block;
+    transition: translate 400ms var(--curva-saida);
   }
 
+  .pilar__link:hover::after {
+    translate: 0.3rem 0;
+  }
+
+  .pilar:has(.pilar__link:focus-visible) {
+    outline: 3px solid var(--cor-foco);
+    outline-offset: 2px;
+  }
+
+  .pilar__link:focus-visible {
+    outline: none;
+  }
+
+  .pilares__barra {
+    display: none;
+  }
+
+  @media (min-width: 40rem) {
+    .horizontal__trilho {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Com JS em tela larga: a seção trava e os pilares deslizam para o lado. */
+  .pilares:global(.horizontal--ativo) .pilares__fixo {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    padding-block: var(--espaco-7);
+  }
+
+  .pilares:global(.horizontal--ativo) .horizontal__trilho {
+    display: flex;
+    width: max-content;
+    margin: 0;
+    padding-inline: max(var(--margem-lateral), (100vw - var(--largura-max)) / 2);
+    will-change: transform;
+  }
+
+  .pilares:global(.horizontal--ativo) .pilar {
+    width: clamp(22rem, 34vw, 30rem);
+    min-height: 26rem;
+  }
+
+  .pilares:global(.horizontal--ativo) .pilares__barra {
+    display: block;
+    width: min(100% - 2 * var(--margem-lateral), var(--largura-max));
+    height: 2px;
+    margin: var(--espaco-6) auto 0;
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  .pilares__barra span {
+    display: block;
+    height: 100%;
+    background: var(--ouro-500);
+    transform: scaleX(var(--progresso, 0));
+    transform-origin: 0 50%;
+  }
+
+  /* ---------- Listas ---------- */
+  .ver-mais {
+    margin-top: var(--espaco-6);
+    font-family: var(--fonte-titulo);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .ver-mais a {
+    text-decoration: none;
+    background: linear-gradient(var(--ouro-500), var(--ouro-500)) 0 100% / 100% 2px no-repeat;
+    transition: background-size 500ms var(--curva-saida);
+  }
+
+  .ver-mais a::after {
+    content: ' →';
+  }
+
+  .ver-mais a:hover {
+    background-size: 0% 2px;
+    background-position: 100% 100%;
+  }
+
+  /* ---------- Chamada da loja ---------- */
+  .loja-chamada {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--espaco-secao);
+    background:
+      radial-gradient(ellipse 60% 70% at 80% 50%, rgb(17 128 51 / 0.6), transparent 70%),
+      var(--verde-900);
+    color: var(--verde-100);
+  }
+
+  .loja-chamada__grade {
+    display: grid;
+    gap: var(--espaco-6);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .loja-chamada__grade {
+      grid-template-columns: 1.3fr 1fr;
+    }
+  }
+
+  .loja-chamada__texto {
+    display: grid;
+    gap: var(--espaco-4);
+    justify-items: start;
+  }
+
+  .loja-chamada__chapeu {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro-400);
+  }
+
+  .loja-chamada h2 {
+    max-width: 12ch;
+    font-size: var(--titulo-xl);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--branco);
+  }
+
+  .loja-chamada__arte {
+    width: min(100%, 24rem);
+    justify-self: center;
+    color: var(--branco);
+  }
+
+  .loja-chamada__arte :global(.ilustracao) {
+    width: 100%;
+    height: auto;
+  }
 </style>
