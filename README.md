@@ -28,10 +28,16 @@ Sem configurar nada, o site usa o conteúdo de exemplo de `src/data/fallback.ts`
    PRISMIC_REPOSITORY=nome-do-repo PRISMIC_WRITE_TOKEN=seu-token npm run prismic:modelos
    ```
 
-4. Cadastre primeiro o documento **Configurações do site** (WhatsApp, chave PIX etc.) e depois o resto do conteúdo.
-5. Copie `.env.example` para `.env` e preencha `PRISMIC_REPOSITORY` (e `PRISMIC_ACCESS_TOKEN` se a API for privada).
+4. (Opcional) Para demonstrar o site completo, envie o conteúdo de exemplo de `scripts/conteudo-exemplo/` com imagens ilustrativas. Tudo chega com a tag `exemplo`; o `--publicar` publica na hora (sem ele, os documentos ficam em Releases para você revisar):
 
-O token de escrita só é usado nesse comando; ele não vai para a Vercel nem para o `.env`.
+   ```sh
+   PRISMIC_REPOSITORY=nome-do-repo PRISMIC_WRITE_TOKEN=seu-token npm run prismic:conteudo -- --publicar
+   ```
+
+5. Cadastre primeiro o documento **Configurações do site** (WhatsApp, chave PIX etc.) e depois o resto do conteúdo.
+6. Copie `.env.example` para `.env` e preencha `PRISMIC_REPOSITORY` (e `PRISMIC_ACCESS_TOKEN` se a API for privada).
+
+O token de escrita só é usado nesses comandos; ele não vai para a Vercel nem para o `.env`.
 
 ## Deploy na Vercel
 
