@@ -21,8 +21,17 @@ Sem configurar nada, o site usa o conteúdo de exemplo de `src/data/fallback.ts`
 ## Conectando ao Prismic
 
 1. Crie um repositório no [Prismic](https://prismic.io).
-2. Crie os tipos de conteúdo a partir dos JSON em `customtypes/` (no editor de Custom Types, use o modo JSON, ou use o Slice Machine).
-3. Copie `.env.example` para `.env` e preencha `PRISMIC_REPOSITORY` (e `PRISMIC_ACCESS_TOKEN` se a API for privada).
+2. Em Settings → API & Security → Write APIs, gere um token da Custom Types API.
+3. Envie os modelos de `customtypes/` de uma vez (pode rodar de novo sempre que um modelo mudar):
+
+   ```sh
+   PRISMIC_REPOSITORY=nome-do-repo PRISMIC_WRITE_TOKEN=seu-token npm run prismic:modelos
+   ```
+
+4. Cadastre primeiro o documento **Configurações do site** (WhatsApp, chave PIX etc.) e depois o resto do conteúdo.
+5. Copie `.env.example` para `.env` e preencha `PRISMIC_REPOSITORY` (e `PRISMIC_ACCESS_TOKEN` se a API for privada).
+
+O token de escrita só é usado nesse comando; ele não vai para a Vercel nem para o `.env`.
 
 ## Deploy na Vercel
 
