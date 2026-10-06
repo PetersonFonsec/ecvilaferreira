@@ -16,7 +16,7 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: (pagina) => !/\/offline\/?$/.test(pagina) })],
   vite: {
     // O three.js (brasão 3D) fica num pedaço separado, baixado só na home e depois do carregamento.
     build: { chunkSizeWarningLimit: 700 },
