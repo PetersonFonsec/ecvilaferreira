@@ -25,12 +25,14 @@ const raiz = path.resolve(fileURLToPath(import.meta.url), '../..');
 const publico = path.join(raiz, 'public');
 const ORIGEM = 'http://marca.local';
 
+const VERDE = CORES_BRASAO.verde;
 const VERDE_900 = '#052a13';
 const OURO = CORES_BRASAO.ouro;
+const CREME = '#f6f1e3';
 
 const tipos = { '.js': 'text/javascript', '.woff2': 'font/woff2', '.glb': 'model/gltf-binary', '.html': 'text/html' };
 
-const fontes = [600, 700, 800]
+const fontes = [600, 700, 800, 900]
   .map(
     (peso) =>
       `@font-face{font-family:'Barlow Condensed';font-weight:${peso};src:url(/node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-${peso}-normal.woff2) format('woff2')}`,
@@ -38,6 +40,8 @@ const fontes = [600, 700, 800]
   .join('');
 
 const navegador = await chromium.launch({
+  // Permite apontar para um Chromium já instalado (ex.: CHROMIUM_PATH=/opt/pw-browsers/...).
+  executablePath: process.env.CHROMIUM_PATH,
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
 });
 
@@ -82,7 +86,7 @@ ${estilo}
 </style></head><body>${corpo}
 <script>document.fonts.ready.then(()=>requestAnimationFrame(()=>document.title='pronto'))</script></body></html>`;
 
-/** Brasão 3D renderizado com three.js, de frente e levemente girado. */
+/** Brasão 3D renderizado com three.js, quase de frente. */
 async function brasao3D() {
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
@@ -104,28 +108,58 @@ const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
 const g = await loader.loadAsync('/public/3d/vila-ferreira.glb');
 const m = g.scene; m.position.sub(new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3()));
 m.traverse((o) => { if (o.isMesh && /estrelas/i.test(o.name)) { o.material.color = new THREE.Color('#f6c40a'); o.material.metalness = 0.55; o.material.roughness = 0.3; o.material.emissive = new THREE.Color('#7a5600'); o.material.emissiveIntensity = 0.5; } });
-const pivo = new THREE.Group(); pivo.add(m); pivo.rotation.set(0.06, -0.38, 0.02); cena.add(pivo);
+const pivo = new THREE.Group(); pivo.add(m); pivo.rotation.set(0.06, 0.22, 0.02); cena.add(pivo);
 r.render(cena, cam); document.title = 'pronto';
 </script></body></html>`;
   const png = await capturar({ html, largura: 900, altura: 1000, transparente: true });
   return `data:image/png;base64,${png.toString('base64')}`;
 }
 
-function svgIlustracao(nome, cor = '#fff', espessura = 3) {
+function svgIlustracao(nome, cor = '#fff', espessura = 3, destaque = OURO) {
   const d = ilustracoes[nome];
   const preenche = (d.preenchimentos ?? [])
-    .map((p) => `<path d="${p.d}" fill="${p.cor === 'traco' ? cor : OURO}"/>`)
+    .map((p) => `<path d="${p.d}" fill="${p.cor === 'traco' ? cor : destaque}"/>`)
     .join('');
   const tracos = d.tracos.map((t) => `<path d="${t}" stroke="${cor}"/>`).join('');
-  const destaques = (d.destaques ?? []).map((t) => `<path d="${t}" stroke="${OURO}"/>`).join('');
+  const destaques = (d.destaques ?? []).map((t) => `<path d="${t}" stroke="${destaque}"/>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${d.viewBox}" fill="none" stroke-width="${espessura}" stroke-linecap="round" stroke-linejoin="round">${preenche}${tracos}${destaques}</svg>`;
 }
 
 // ---------- Ícones ----------
 const brasaoFixo = (opcoes) => svgBrasao({ cores: 'fixas', id: 'b', ...opcoes });
 
-// favicon.svg: versão simples (sem letras e sem as estrelas de cima), legível em 16 px.
-await writeFile(path.join(publico, 'favicon.svg'), brasaoFixo({ tamanho: 64, simples: true, estrelas: false }) + '\n');
+function estrela(cx, cy, r) {
+  const p = [];
+  for (let i = 0; i < 10; i++) {
+    const raio = i % 2 === 0 ? r : r * 0.42;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    p.push(`${(cx + raio * Math.cos(a)).toFixed(2)},${(cy + raio * Math.sin(a)).toFixed(2)}`);
+  }
+  return `M${p.join('L')}Z`;
+}
+
+/**
+ * Favicon: o brasão redondo simplificado (sem textos), com aro dourado e o Cruzeiro do Sul
+ * em estrelas grandes para continuar legível em 16 px. Desenhado num quadro de 64×64.
+ */
+const CRUZEIRO = [
+  [-14.4, -45, 8],
+  [-44, -10.3, 8],
+  [30, -20.6, 7.5],
+  [25.8, 22.2, 7.5],
+  [-19.6, 42.3, 6],
+];
+const svgFavicon = (lado = 64) => {
+  const s = 64 / 200;
+  const estrelas = CRUZEIRO.map(([x, y, r]) => estrela(32 + x * 0.86 * s, 32 + y * 0.86 * s, r * 1.7 * s)).join('');
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${lado}" height="${lado}" viewBox="0 0 64 64">` +
+    `<circle cx="32" cy="32" r="31.5" fill="${OURO}"/><circle cx="32" cy="32" r="28.5" fill="${VERDE}"/>` +
+    `<circle cx="32" cy="32" r="19.5" fill="#fff"/><path fill="${VERDE}" d="${estrelas}"/></svg>`
+  );
+};
+
+await writeFile(path.join(publico, 'favicon.svg'), svgFavicon() + '\n');
 console.log('✓ public/favicon.svg');
 
 // favicon.ico com 16, 32 e 48 px (PNG dentro do ICO, aceito por todos os navegadores atuais).
@@ -134,7 +168,7 @@ const pngsIco = [];
 for (const t of tamanhosIco) {
   pngsIco.push(
     await capturar({
-      html: paginaSimples(brasaoFixo({ tamanho: t, simples: true, estrelas: false }), 'svg{display:block}'),
+      html: paginaSimples(svgFavicon(t), 'svg{display:block}'),
       largura: t,
       altura: t,
       transparente: true,
@@ -162,20 +196,19 @@ for (const t of tamanhosIco) {
   console.log('✓ public/favicon.ico');
 }
 
-/** Ícone quadrado com fundo verde e o brasão completo centralizado. `ocupacao` é a fração da altura. */
+/** Ícone quadrado com fundo creme e o favicon centralizado. `ocupacao` é a fração do lado. */
 const icone = (lado, ocupacao) =>
   paginaSimples(
-    `<div class="i">${brasaoFixo({ tamanho: 200, estrelas: true })}</div>`,
+    `<div class="i">${svgFavicon(Math.round(lado * ocupacao))}</div>`,
     `.i{width:${lado}px;height:${lado}px;display:grid;place-items:center;
-      background:radial-gradient(circle at 50% 55%, #118033 0%, ${VERDE_900} 70%)}
-     .i svg{height:${Math.round(lado * ocupacao)}px;width:auto}`,
+      background:radial-gradient(circle at 50% 45%, #fffaf0, ${CREME})}`,
   );
 
-await capturar({ html: icone(180, 0.84), largura: 180, altura: 180, arquivo: path.join(publico, 'apple-touch-icon.png') });
-await capturar({ html: icone(192, 0.84), largura: 192, altura: 192, arquivo: path.join(publico, 'icones/icone-192.png') });
-await capturar({ html: icone(512, 0.84), largura: 512, altura: 512, arquivo: path.join(publico, 'icones/icone-512.png') });
+await capturar({ html: icone(180, 0.8), largura: 180, altura: 180, arquivo: path.join(publico, 'apple-touch-icon.png') });
+await capturar({ html: icone(192, 0.8), largura: 192, altura: 192, arquivo: path.join(publico, 'icones/icone-192.png') });
+await capturar({ html: icone(512, 0.8), largura: 512, altura: 512, arquivo: path.join(publico, 'icones/icone-512.png') });
 // Maskable: o sistema pode recortar em círculo, então o brasão ocupa só a zona segura (~60%).
-await capturar({ html: icone(512, 0.6), largura: 512, altura: 512, arquivo: path.join(publico, 'icones/icone-mascara-512.png') });
+await capturar({ html: icone(512, 0.58), largura: 512, altura: 512, arquivo: path.join(publico, 'icones/icone-mascara-512.png') });
 
 // Brasão em PNG transparente (logo no JSON-LD e para quem precisar da arte).
 await capturar({
@@ -189,38 +222,41 @@ await capturar({
 // ---------- Imagens de compartilhamento (1200×630, JPEG para ficar abaixo de 300 KB, limite do WhatsApp) ----------
 const imagem3D = await brasao3D();
 
+/** Títulos longos diminuem; palavras longas (ex.: PATROCINADORES) não quebram, então diminuem mais. */
+function tamanhoTitulo(titulo) {
+  const maiorPalavra = Math.max(...titulo.split(' ').map((p) => p.length));
+  if (maiorPalavra >= 13) return 83;
+  return titulo.length > 18 ? 96 : titulo.length > 12 ? 112 : 124;
+}
+
 const og = (secao) =>
   paginaSimples(
     `<div class="og">
-      <div class="campo">${svgIlustracao('campo', 'rgba(255,255,255,.08)', 2)}</div>
-      <div class="brilho"></div>
+      <div class="campo">${svgIlustracao('campo', 'rgba(11,100,39,.09)', 2, 'rgba(11,100,39,.09)')}</div>
       <img class="brasao" src="${imagem3D}" alt="">
       <div class="texto">
+        <div class="ilu">${svgIlustracao(secao.ilustracao === 'campo' ? 'bola' : secao.ilustracao, VERDE, 3.2)}</div>
         <p class="chapeu">${secao.chapeu}</p>
         <h1>${secao.titulo}</h1>
         <p class="sub">${secao.subtitulo}</p>
       </div>
-      ${secao.ilustracao !== 'campo' ? `<div class="ilu">${svgIlustracao(secao.ilustracao, 'rgba(255,255,255,.9)', 3)}</div>` : ''}
       <div class="rodape"><span>Esporte Clube Vila Ferreira</span><span>ecvilaferreira.com.br</span></div>
     </div>`,
-    `.og{position:relative;width:1200px;height:630px;overflow:hidden;color:#fff;font-family:'Barlow Condensed',sans-serif;
-        background:radial-gradient(ellipse 60% 80% at 22% 50%, rgba(17,128,51,.75), transparent 70%),
-          repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 70px, transparent 70px 140px), ${VERDE_900}}
-     .og::after{content:'';position:absolute;inset:auto 0 0;height:8px;background:${OURO}}
-     .campo{position:absolute;inset:-40px -60px auto -60px;transform:perspective(900px) rotateX(50deg);transform-origin:50% 0;opacity:.9}
+    `.og{position:relative;width:1200px;height:630px;overflow:hidden;color:${VERDE_900};font-family:'Barlow Condensed',sans-serif;
+        background:radial-gradient(ellipse 50% 70% at 82% 50%, rgba(242,203,44,.35), transparent 70%), ${CREME}}
+     .og::before{content:'';position:absolute;inset:auto 0 0;height:14px;background:linear-gradient(${OURO} 0 6px, ${VERDE} 6px)}
+     .campo{position:absolute;inset:-30px -80px auto -80px;transform:perspective(900px) rotateX(52deg);transform-origin:50% 0}
      .campo svg{width:100%}
-     .brilho{position:absolute;left:40px;top:90px;width:440px;height:440px;border-radius:50%;
-        background:radial-gradient(circle, rgba(242,203,44,.35), transparent 65%);filter:blur(10px)}
-     .brasao{position:absolute;left:-10px;top:10px;height:610px;filter:drop-shadow(0 30px 40px rgba(0,0,0,.45))}
-     .texto{position:absolute;left:520px;right:60px;top:0;bottom:70px;display:flex;flex-direction:column;justify-content:center;gap:14px}
-     .chapeu{display:flex;align-items:center;gap:14px;font-weight:700;font-size:26px;letter-spacing:.2em;text-transform:uppercase;color:${OURO}}
-     .chapeu::before{content:'';width:48px;height:3px;background:${OURO}}
-     h1{font-weight:800;font-size:${secao.titulo.length > 18 ? 96 : 118}px;line-height:.9;text-transform:uppercase;letter-spacing:-.005em}
-     .sub{font-weight:600;font-size:34px;line-height:1.1;color:#e6f4ea;max-width:560px}
-     .ilu{position:absolute;right:40px;top:40px;width:130px;opacity:.95}
-     .ilu svg{width:100%}
-     .rodape{position:absolute;left:520px;right:60px;bottom:34px;display:flex;justify-content:space-between;
-        font-weight:700;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75)}`,
+     .brasao{position:absolute;right:-40px;top:-10px;height:650px;filter:drop-shadow(0 30px 34px rgba(5,42,19,.35))}
+     .texto{position:absolute;left:70px;width:620px;top:0;bottom:80px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+     .ilu{width:84px;margin-bottom:6px}
+     .ilu svg{width:100%;display:block}
+     .chapeu{display:flex;align-items:center;gap:14px;font-weight:700;font-size:26px;letter-spacing:.2em;text-transform:uppercase;color:${VERDE}}
+     .chapeu::before{content:'';width:48px;height:4px;background:${OURO}}
+     h1{font-weight:900;font-size:${tamanhoTitulo(secao.titulo)}px;line-height:.88;text-transform:uppercase;color:${VERDE}}
+     .sub{font-weight:600;font-size:34px;line-height:1.1;color:#2b4a35;max-width:560px}
+     .rodape{position:absolute;left:70px;width:620px;bottom:40px;display:flex;justify-content:space-between;
+        font-weight:700;font-size:21px;letter-spacing:.14em;text-transform:uppercase;color:rgba(5,42,19,.6)}`,
   );
 
 for (const secao of imagensSecoes) {
