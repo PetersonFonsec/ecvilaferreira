@@ -1,0 +1,179 @@
+---
+import Escudo from '@/components/ui/Escudo.astro';
+
+/**
+ * Tela de abertura (pre-loading). Só aparece na primeira página que a pessoa abre na sessão,
+ * quando o <head> liga a classe .abertura no <html>. Sem JavaScript ou com "reduzir movimento",
+ * fica escondida e o conteúdo aparece direto. A lógica está em src/scripts/abertura.ts.
+ */
+---
+
+<div class="abertura-tela" aria-hidden="true">
+  <div class="abertura-tela__cortina abertura-tela__cortina--ouro"></div>
+  <div class="abertura-tela__cortina abertura-tela__cortina--verde">
+    <div class="abertura-tela__centro">
+      <Escudo tamanho={132} class="abertura-tela__escudo" />
+      <p class="abertura-tela__nome">
+        <span>Esporte Clube</span>
+        <strong>Vila Ferreira</strong>
+      </p>
+    </div>
+
+    <div class="abertura-tela__rodape">
+      <span class="abertura-tela__desde">Desde 1984</span>
+      <span class="abertura-tela__numero"><span data-abertura-numero>0</span>%</span>
+    </div>
+    <div class="abertura-tela__barra"><span data-abertura-barra></span></div>
+  </div>
+</div>
+
+<style>
+  .abertura-tela {
+    display: none;
+  }
+
+  /* Trava a rolagem enquanto cobre a página; solta já no começo da saída, ainda atrás da cortina. */
+  :global(html.abertura:not(.abertura--saindo)) {
+    overflow: hidden;
+  }
+
+  :global(html.abertura) .abertura-tela {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: block;
+    color: var(--branco);
+    font-family: var(--fonte-titulo);
+    text-transform: uppercase;
+  }
+
+  .abertura-tela__cortina {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 900ms var(--curva-entra-sai);
+  }
+
+  .abertura-tela__cortina--ouro {
+    background: var(--ouro-500);
+    transition-delay: 120ms;
+  }
+
+  .abertura-tela__cortina--verde {
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    padding: clamp(1.25rem, 4vw, 3rem);
+    background:
+      radial-gradient(circle at 50% 45%, rgb(30 154 70 / 0.35), transparent 55%),
+      var(--verde-950);
+  }
+
+  .abertura-tela__centro {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: var(--espaco-5);
+    text-align: center;
+  }
+
+  .abertura-tela :global(.abertura-tela__escudo) {
+    width: clamp(6.5rem, 18vw, 8.25rem);
+    height: auto;
+    filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.45));
+    animation: abertura-escudo 1100ms var(--curva-saida) both;
+  }
+
+  .abertura-tela__nome {
+    display: grid;
+    gap: 0.1em;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    animation: abertura-sobe 900ms var(--curva-saida) 250ms both;
+  }
+
+  .abertura-tela__nome span {
+    color: var(--ouro-400);
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+  }
+
+  .abertura-tela__nome strong {
+    font-size: var(--titulo-md);
+    font-weight: 800;
+  }
+
+  .abertura-tela__rodape {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+    padding-block-end: var(--espaco-3);
+    animation: abertura-sobe 900ms var(--curva-saida) 400ms both;
+  }
+
+  .abertura-tela__desde {
+    color: var(--verde-300);
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    letter-spacing: 0.25em;
+  }
+
+  .abertura-tela__numero {
+    font-size: clamp(3rem, 2rem + 6vw, 7rem);
+    font-weight: 800;
+    line-height: 0.8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .abertura-tela__barra {
+    height: 2px;
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  .abertura-tela__barra span {
+    display: block;
+    height: 100%;
+    background: var(--ouro-500);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* Saída: o conteúdo some, a cortina verde sobe e a dourada vem logo atrás. */
+  :global(html.abertura--saindo) .abertura-tela__centro,
+  :global(html.abertura--saindo) .abertura-tela__rodape {
+    opacity: 0;
+    translate: 0 -2rem;
+    transition:
+      opacity 400ms ease,
+      translate 600ms var(--curva-saida);
+  }
+
+  :global(html.abertura--saindo) .abertura-tela__cortina {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  :global(html.abertura--saindo) .abertura-tela__cortina--verde {
+    transition-delay: 200ms;
+  }
+
+  :global(html.abertura--saindo) .abertura-tela__cortina--ouro {
+    transition-delay: 340ms;
+  }
+
+  @keyframes abertura-escudo {
+    from {
+      opacity: 0;
+      scale: 0.7;
+      rotate: -8deg;
+    }
+  }
+
+  @keyframes abertura-sobe {
+    from {
+      opacity: 0;
+      translate: 0 1.5rem;
+    }
+  }
+</style>

@@ -7,6 +7,7 @@ import '@/styles/global.css';
 import SEO from '@/components/layout/SEO.astro';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
+import Abertura from '@/components/layout/Abertura.astro';
 import { getConfiguracoes } from '@/lib/content';
 import { imagemCompartilhamento } from '@/lib/imagem';
 import { imagemDaSecao } from '@/data/compartilhamento';
@@ -36,15 +37,27 @@ const imagemPadrao =
     <link rel="manifest" href="/site.webmanifest" />
     <script is:inline>
       // Liga os estados iniciais das animações. Se os efeitos não carregarem em 4 s, mostra tudo.
-      document.documentElement.classList.add('js');
+      var raiz = document.documentElement;
+      raiz.classList.add('js');
       setTimeout(function () {
-        if (!document.documentElement.classList.contains('efeitos-ok')) document.documentElement.classList.add('revelar-tudo');
+        if (!raiz.classList.contains('efeitos-ok')) raiz.classList.add('revelar-tudo');
       }, 4000);
+      // Tela de abertura: só na primeira página da sessão e sem "reduzir movimento". Some em 5 s se os efeitos não carregarem.
+      try {
+        if (!sessionStorage.getItem('vf-abertura') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          sessionStorage.setItem('vf-abertura', '1');
+          raiz.classList.add('abertura');
+          setTimeout(function () {
+            if (!raiz.classList.contains('efeitos-ok')) raiz.classList.remove('abertura');
+          }, 5000);
+        }
+      } catch (e) {}
     </script>
     <link rel="sitemap" href="/sitemap-index.xml" />
     <SEO {...seo} descricao={descricao} imagem={imagem ?? imagemPadrao} nomeSite={config.nome} />
   </head>
   <body>
+    <Abertura />
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
     <div class="progresso-leitura" aria-hidden="true"></div>
     <Header nome={config.nome} />
