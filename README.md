@@ -36,5 +36,5 @@ O token de escrita só é usado nesse comando; ele não vai para a Vercel nem pa
 ## Deploy na Vercel
 
 1. Importe o repositório na Vercel (o framework Astro é detectado automaticamente).
-2. Em Environment Variables, defina `PRISMIC_REPOSITORY` e `SITE_URL`.
+2. Em Environment Variables, defina `PRISMIC_REPOSITORY`. O endereço do site (canonical, Open Graph, sitemap) vem do domínio de produção configurado na Vercel; use `SITE_URL` só se quiser forçar outro.
 3. Em Settings → Git → Deploy Hooks, crie um hook e cole a URL em Prismic → Settings → Webhooks. Assim, cada publicação no Prismic gera um novo build.

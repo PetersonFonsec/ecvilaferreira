@@ -2,8 +2,12 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// URL pública do site. Defina SITE_URL na Vercel quando o domínio oficial existir.
-const site = process.env.SITE_URL ?? 'https://ecvilaferreira.vercel.app';
+// URL pública do site, usada em canonical, Open Graph e sitemap.
+// Na Vercel, VERCEL_PROJECT_PRODUCTION_URL já traz o domínio de produção (o próprio, quando configurado).
+// SITE_URL, se definida, tem prioridade.
+const dominioVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+const site =
+  process.env.SITE_URL ?? (dominioVercel ? `https://${dominioVercel}` : 'https://ecvilaferreira.vercel.app');
 
 export default defineConfig({
   site,
