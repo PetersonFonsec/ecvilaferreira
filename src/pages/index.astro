@@ -302,11 +302,13 @@ const jsonLd = {
     list-style: none;
   }
 
+  /* Coluna flexível: o link vai para o rodapé do card, seja qual for o tamanho do texto. */
   .pilar {
     position: relative;
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--espaco-3);
-    align-content: start;
     padding: var(--espaco-6) var(--espaco-5);
     border: 1px solid rgb(255 255 255 / 0.12);
     border-radius: var(--raio-lg);
@@ -331,8 +333,13 @@ const jsonLd = {
     -webkit-text-stroke: 1.5px rgb(242 203 44 / 0.55);
   }
 
+  /* Caixa de altura fixa com o desenho apoiado na base: títulos alinhados entre os cards,
+     mesmo quando a ilustração é mais baixa (como a do bairro). */
   .pilar__arte {
+    display: flex;
+    align-items: flex-end;
     width: 9rem;
+    aspect-ratio: 1;
     color: var(--branco);
   }
 
@@ -352,8 +359,8 @@ const jsonLd = {
   }
 
   .pilar__link {
-    justify-self: start;
-    margin-top: var(--espaco-3);
+    margin-top: auto;
+    padding-top: var(--espaco-3);
     font-family: var(--fonte-titulo);
     font-size: 1.125rem;
     font-weight: 700;
