@@ -52,10 +52,11 @@ const prazo = fim && {
           )
         }
         {prazo && (
-          <p class="destaque__selo" aria-label={`Até ${prazo.completo}`}>
+          <p class="destaque__selo">
             <span aria-hidden="true">Até</span>
             <strong aria-hidden="true">{prazo.dia}</strong>
             <span aria-hidden="true">{prazo.mes}</span>
+            <span class="visualmente-oculto">Até {prazo.completo}</span>
           </p>
         )}
       </div>
