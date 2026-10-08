@@ -11,12 +11,13 @@ const { nome } = Astro.props;
 
 <header class="cabecalho">
   <div class="container cabecalho__interno">
-    <a class="marca" href="/" aria-label={`${nome}, página inicial`}>
+    <a class="marca" href="/">
       <Escudo tamanho={44} class="marca__escudo" />
       <span class="marca__texto">
         <span class="marca__nome">Vila Ferreira</span>
         <span class="marca__desde">Desde 1984</span>
       </span>
+      <span class="visualmente-oculto">, página inicial do {nome}</span>
     </a>
 
     <!-- Sem JavaScript o menu fica sempre visível. Com JS, vira um menu em tela cheia no celular. -->

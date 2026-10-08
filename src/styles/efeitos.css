@@ -91,7 +91,7 @@
 
   /* ---------- Palavras que acendem com a rolagem ---------- */
   .acender--js .palavra {
-    opacity: calc(0.18 + var(--luz, 0) * 0.82);
+    opacity: calc(0.52 + var(--luz, 0) * 0.48);
     transition: opacity 120ms linear;
   }
 

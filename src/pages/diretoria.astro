@@ -12,6 +12,7 @@ const diretoria = await getDiretoria();
   <Hero ilustracao="apito" chapeu="Clube" titulo="Diretoria" texto="Gente do bairro que dedica seu tempo para manter o clube vivo." />
 
   <Section>
+    <h2 class="visualmente-oculto">Membros da diretoria</h2>
     <ul class="grade grade--estreita" role="list" data-revelar="grupo">
       {
         diretoria.map((membro) => (
